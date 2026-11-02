@@ -1,2 +1,9 @@
 [tools]
 godot = "4.7.2"
+
+[tasks.test]
+description = "Re-import when a script changed since the last import (registers class_name), then run GUT headless"
+run = [
+  "test -f .godot/last_import && test -z \"$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)\" || { godot --headless --import --path . && touch .godot/last_import; }",
+  "godot --headless -s --path . addons/gut/gut_cmdln.gd",
+]
