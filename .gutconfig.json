@@ -1,0 +1,9 @@
+{
+  "dirs": [
+    "res://tests/"
+  ],
+  "prefix": "test_",
+  "should_exit": true,
+  "junit_xml_file": "res://.godot/gut_junit.xml",
+  "post_run_script": "res://tests/gut_post_run.gd"
+}
