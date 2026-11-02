@@ -15,3 +15,7 @@ enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/gut/
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=2
