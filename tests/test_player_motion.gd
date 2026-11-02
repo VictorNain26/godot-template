@@ -1,0 +1,23 @@
+extends GutTest
+
+const SPEED := 200.0
+
+
+func test_right_input_moves_by_speed_times_delta() -> void:
+	var step := PlayerMotion.displacement(Vector2.RIGHT, SPEED, 0.5)
+	assert_eq(step, Vector2(100.0, 0.0))
+
+
+func test_no_input_does_not_move() -> void:
+	var step := PlayerMotion.displacement(Vector2.ZERO, SPEED, 0.5)
+	assert_eq(step, Vector2.ZERO)
+
+
+func test_diagonal_input_is_normalized() -> void:
+	var step := PlayerMotion.displacement(Vector2(1.0, 1.0), SPEED, 1.0)
+	assert_almost_eq(step.length(), SPEED, 0.001)
+
+
+func test_zero_delta_does_not_move() -> void:
+	var step := PlayerMotion.displacement(Vector2.RIGHT, SPEED, 0.0)
+	assert_eq(step, Vector2.ZERO)
