@@ -7,6 +7,7 @@ const MAIN_SCENE := "res://scenes/main_3d.tscn"
 const PLAYER_SCRIPT := "res://scenes/player_3d.gd"
 const DELTA := 0.5
 const EPSILON := 0.001
+const TOLERANCE := Vector3.ONE * EPSILON
 const DIRECTIONS := [
 	["move_right", Vector3.RIGHT],
 	["move_left", Vector3.LEFT],
@@ -40,15 +41,13 @@ func test_player_is_a_body_running_player_script() -> void:
 func test_each_action_moves_player_its_way(p: Array = use_parameters(DIRECTIONS)) -> void:
 	_sender.action_down(p[0])
 	_player._physics_process(DELTA)
-	var direction: Vector3 = p[1]
-	var expected := direction * _player.speed * DELTA
-	var tolerance := Vector3(EPSILON, EPSILON, EPSILON)
-	assert_almost_eq(_player.position - _start, expected, tolerance)
+	var expected: Vector3 = p[1] * _player.speed * DELTA
+	assert_almost_eq(_player.position - _start, expected, TOLERANCE)
 
 
 func test_no_input_keeps_player_still() -> void:
 	_player._physics_process(DELTA)
-	assert_almost_eq(_player.position, _start, Vector3(EPSILON, EPSILON, EPSILON))
+	assert_almost_eq(_player.position, _start, TOLERANCE)
 
 
 func test_diagonal_input_moves_at_straight_line_speed() -> void:

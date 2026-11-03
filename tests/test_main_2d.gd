@@ -7,6 +7,7 @@ const MAIN_SCENE := "res://scenes/main_2d.tscn"
 const PLAYER_SCRIPT := "res://scenes/player_2d.gd"
 const DELTA := 0.5
 const EPSILON := 0.001
+const TOLERANCE := Vector2.ONE * EPSILON
 const DIRECTIONS := [
 	["move_right", Vector2.RIGHT],
 	["move_left", Vector2.LEFT],
@@ -41,12 +42,12 @@ func test_each_action_moves_player_its_way(p: Array = use_parameters(DIRECTIONS)
 	_sender.action_down(p[0])
 	_player._physics_process(DELTA)
 	var expected: Vector2 = p[1] * _player.speed * DELTA
-	assert_almost_eq(_player.position - _start, expected, Vector2(EPSILON, EPSILON))
+	assert_almost_eq(_player.position - _start, expected, TOLERANCE)
 
 
 func test_no_input_keeps_player_still() -> void:
 	_player._physics_process(DELTA)
-	assert_almost_eq(_player.position, _start, Vector2(EPSILON, EPSILON))
+	assert_almost_eq(_player.position, _start, TOLERANCE)
 
 
 func test_diagonal_input_moves_at_straight_line_speed() -> void:

@@ -11,9 +11,12 @@ description = "Re-import when a script changed since the last import (registers 
 run = "test -f .godot/last_import && test -z \"$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)\" || { godot --headless --import --path . && touch .godot/last_import; }"
 
 [tasks.test]
-description = "Run GUT headless (timeout: GUT hangs when its post-run hook fails to parse)"
+description = "Run GUT headless; GUT hangs if its post-run hook fails to parse, so check that first"
 depends = ["import"]
-run = "timeout 300 godot --headless -s --path . addons/gut/gut_cmdln.gd"
+run = [
+  "godot --headless --path . --check-only -s tests/gut_post_run.gd",
+  "timeout 120 godot --headless -s --path . addons/gut/gut_cmdln.gd",
+]
 
 [tasks.lint]
 description = "Check GDScript formatting and lint rules outside addons/"
@@ -25,8 +28,8 @@ depends = ["import"]
 run = """
 status=0
 for scene in scenes/main_*.tscn; do
-  out=$(timeout 120 godot --headless --path . --quit-after 120 "res://$scene" 2>&1)
-  errors=$(printf '%s\\n' "$out" | grep -E '^(SCRIPT )?ERROR' | grep -v 'user://logs' || true)
+  out=$(timeout 120 godot --headless --path . --log-file "${TMPDIR:-/tmp}/godot-smoke.log" --quit-after 120 "res://$scene" 2>&1)
+  errors=$(printf '%s\\n' "$out" | grep -E '^(SCRIPT )?ERROR' || true)
   if [ -n "$errors" ]; then
     printf 'smoke failed: %s\\n%s\\n' "$scene" "$errors" >&2
     status=1
