@@ -37,13 +37,38 @@ depends = ["import"]
 run = """
 status=0
 for scene in scenes/main_*.tscn; do
-  rc=0
-  out=$(timeout 120 godot --headless --path . --log-file "${TMPDIR:-/tmp}/godot-smoke.log" --quit-after 120 "res://$scene" 2>&1) || rc=$?
-  errors=$(printf '%s\\n' "$out" | grep -E '^(USER )?(SCRIPT )?ERROR' || true)
-  if [ "$rc" -ne 0 ] || [ -n "$errors" ]; then
-    printf 'smoke failed: %s (exit %s)\\n%s\\n' "$scene" "$rc" "$errors" >&2
-    status=1
-  fi
+  tools/smoke.sh "$scene" godot --path . "res://$scene" || status=1
 done
 exit $status
 """
+
+[tasks.export-templates]
+description = "Download, SHA512-check and install the official export templates of the pinned Godot (skipped if installed)"
+run = """
+version=$(godot --version | cut -d. -f1-4)
+dir="${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/$version"
+[ -f "$dir/linux_release.x86_64" ] && [ -f "$dir/windows_release_x86_64.exe" ] && exit 0
+tpz="Godot_v${version%.stable}-stable_export_templates.tpz"
+base="https://github.com/godotengine/godot/releases/download/${version%.stable}-stable"
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+cd "$work"
+curl -fsSL -o SHA512-SUMS.txt "$base/SHA512-SUMS.txt"
+curl -fsSL -o "$tpz" "$base/$tpz"
+grep " $tpz\\$" SHA512-SUMS.txt | sha512sum -c --strict -
+mkdir -p "$dir"
+unzip -q -j -o "$tpz" templates/version.txt templates/linux_release.x86_64 templates/windows_release_x86_64.exe -d "$dir"
+"""
+
+[tasks.export]
+description = "Export the Linux and Windows release builds to build/"
+depends = ["import", "export-templates"]
+run = """
+mkdir -p build/linux build/windows
+godot --headless --path . --export-release "Linux" build/linux/game.x86_64
+godot --headless --path . --export-release "Windows Desktop" build/windows/game.exe
+"""
+
+[tasks.export-smoke]
+description = "Run the exported Linux build headless for 120 frames; fail on a non-zero exit or any error line"
+run = "tools/smoke.sh build/linux/game.x86_64 build/linux/game.x86_64"
