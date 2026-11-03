@@ -4,4 +4,4 @@ class_name PlayerMotion
 
 
 static func displacement(input: Vector2, speed: float, delta: float) -> Vector2:
-	return input.normalized() * speed * delta
+	return input.limit_length(1.0) * speed * delta
