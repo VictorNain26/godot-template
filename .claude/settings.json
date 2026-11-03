@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"${CLAUDE_PROJECT_DIR}\" && mise run check 1>&2 || exit 2",
+            "command": "input=$(cat); cd \"${CLAUDE_PROJECT_DIR}\" && mise run check 1>&2 && exit 0; printf '%s' \"$input\" | mise exec -- jq -e '.stop_hook_active' >/dev/null && exit 0; exit 2",
             "timeout": 300
           }
         ]
