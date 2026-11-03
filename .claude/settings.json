@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mise run *)",
+      "Bash(mise run check)",
+      "Bash(mise run test)",
+      "Bash(mise run lint)",
+      "Bash(mise run smoke)",
+      "Bash(mise run import)",
       "Bash(godot --headless *)",
       "Bash(git status *)",
       "Bash(git diff *)",
