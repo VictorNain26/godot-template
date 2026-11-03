@@ -1,9 +1,32 @@
 [tools]
 godot = "4.7.2-stable"
+"pipx:gdtoolkit" = "4.5.0"
+
+[tasks.import]
+description = "Re-import when a script changed since the last import (registers class_name)"
+run = "test -f .godot/last_import && test -z \"$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)\" || { godot --headless --import --path . && touch .godot/last_import; }"
 
 [tasks.test]
-description = "Re-import when a script changed since the last import (registers class_name), then run GUT headless"
-run = [
-  "test -f .godot/last_import && test -z \"$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)\" || { godot --headless --import --path . && touch .godot/last_import; }",
-  "godot --headless -s --path . addons/gut/gut_cmdln.gd",
-]
+description = "Run GUT headless (timeout: GUT hangs when its post-run hook fails to parse)"
+depends = ["import"]
+run = "timeout 300 godot --headless -s --path . addons/gut/gut_cmdln.gd"
+
+[tasks.lint]
+description = "Check GDScript formatting and lint rules outside addons/"
+run = ["gdformat --check src scenes tests", "gdlint src scenes tests"]
+
+[tasks.smoke]
+description = "Run every scenes/main_*.tscn headless for 120 frames and fail on any script error"
+depends = ["import"]
+run = """
+status=0
+for scene in scenes/main_*.tscn; do
+  out=$(timeout 120 godot --headless --path . --quit-after 120 "res://$scene" 2>&1)
+  errors=$(printf '%s\\n' "$out" | grep -E '^(SCRIPT )?ERROR' | grep -v 'user://logs' || true)
+  if [ -n "$errors" ]; then
+    printf 'smoke failed: %s\\n%s\\n' "$scene" "$errors" >&2
+    status=1
+  fi
+done
+exit $status
+"""
