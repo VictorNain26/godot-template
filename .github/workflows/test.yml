@@ -36,10 +36,12 @@ jobs:
         with:
           lfs: true
       - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - id: godot
+        run: echo "version=$(godot --version | cut -d. -f1-4)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.local/share/godot/export_templates
-          key: godot-export-templates-${{ hashFiles('mise.toml') }}
+          key: godot-export-templates-${{ steps.godot.outputs.version }}
       - run: mise run export
       - run: mise run export-smoke
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

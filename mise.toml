@@ -10,9 +10,10 @@ depends = ["lint", "test", "smoke"]
 [tasks.import]
 description = "Re-import when a script was added, removed or changed since the last import (class_name cache)"
 run = """
-scripts=$(find . -name '*.gd' -not -path './addons/*' -not -path './.godot/*' | sort)
+project_scripts() { find . -name '*.gd' -not -path './addons/*' -not -path './.godot/*' "$@"; }
+scripts=$(project_scripts | sort)
 if [ -f .godot/last_import ] && [ "$scripts" = "$(cat .godot/last_import)" ] &&
-  [ -z "$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)" ]; then
+  [ -z "$(project_scripts -newer .godot/last_import -print -quit)" ]; then
   exit 0
 fi
 godot --headless --import --path .
