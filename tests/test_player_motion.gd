@@ -21,3 +21,13 @@ func test_diagonal_input_is_normalized() -> void:
 func test_zero_delta_does_not_move() -> void:
 	var step := PlayerMotion.displacement(Vector2.RIGHT, SPEED, 0.0)
 	assert_eq(step, Vector2.ZERO)
+
+
+func test_partial_analog_input_keeps_its_strength() -> void:
+	var step := PlayerMotion.displacement(Vector2(0.3, 0.0), SPEED, 1.0)
+	assert_almost_eq(step, Vector2(0.3 * SPEED, 0.0), Vector2(0.001, 0.001))
+
+
+func test_input_longer_than_one_is_capped_to_speed() -> void:
+	var step := PlayerMotion.displacement(Vector2(3.0, 4.0), SPEED, 1.0)
+	assert_almost_eq(step.length(), SPEED, 0.001)
