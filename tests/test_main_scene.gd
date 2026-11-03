@@ -1,19 +1,24 @@
 extends GutTest
 
+# Wiring only: the movement rule itself is covered by test_player_motion.gd.
+
 const MAIN_SCENE := "res://scenes/main.tscn"
 const DELTA := 0.5
 
+var _sender: GutInputSender = InputSender.new(Input)
 var _player: CharacterBody2D
+var _start: Vector2
 
 
 func before_each() -> void:
 	var main: Node = add_child_autofree(load(MAIN_SCENE).instantiate())
 	_player = main.get_node("Player") as CharacterBody2D
+	_start = _player.position
 
 
 func after_each() -> void:
-	for action: String in ["ui_left", "ui_right", "ui_up", "ui_down"]:
-		Input.action_release(action)
+	_sender.release_all()
+	_sender.clear()
 
 
 func test_main_scene_has_player_body() -> void:
@@ -21,21 +26,11 @@ func test_main_scene_has_player_body() -> void:
 
 
 func test_right_input_moves_player_right() -> void:
-	var start := _player.position
-	Input.action_press("ui_right")
+	_sender.action_down("ui_right")
 	_player._physics_process(DELTA)
-	assert_eq(_player.position - start, Vector2(_player.speed * DELTA, 0.0))
+	assert_eq(_player.position - _start, Vector2(_player.speed * DELTA, 0.0))
 
 
 func test_no_input_keeps_player_still() -> void:
-	var start := _player.position
 	_player._physics_process(DELTA)
-	assert_eq(_player.position, start)
-
-
-func test_diagonal_input_moves_at_straight_line_speed() -> void:
-	var start := _player.position
-	Input.action_press("ui_right")
-	Input.action_press("ui_up")
-	_player._physics_process(DELTA)
-	assert_almost_eq((_player.position - start).length(), _player.speed * DELTA, 0.001)
+	assert_eq(_player.position, _start)
