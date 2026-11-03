@@ -14,14 +14,15 @@ const DIRECTIONS := [
 	["ui_down", Vector2.DOWN],
 ]
 
-var _sender: GutInputSender = InputSender.new(Input)
-var _player: CharacterBody2D
+var _sender := GutInputSender.new(Input)
+var _player: Player2D
 var _start: Vector2
 
 
 func before_each() -> void:
-	var main: Node = add_child_autofree(load(MAIN_SCENE).instantiate())
-	_player = main.get_node_or_null("Player") as CharacterBody2D
+	var scene: PackedScene = load(MAIN_SCENE)
+	var main: Node = add_child_autofree(scene.instantiate())
+	_player = main.get_node_or_null("Player") as Player2D
 	if _player != null:
 		_start = _player.position
 
@@ -49,6 +50,7 @@ func test_no_input_keeps_player_still() -> void:
 
 
 func test_diagonal_input_moves_at_straight_line_speed() -> void:
-	_sender.action_down("ui_right").action_down("ui_up")
+	_sender.action_down("ui_right")
+	_sender.action_down("ui_up")
 	_player._physics_process(DELTA)
 	assert_almost_eq((_player.position - _start).length(), _player.speed * DELTA, EPSILON)

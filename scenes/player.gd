@@ -1,3 +1,4 @@
+class_name Player2D
 extends CharacterBody2D
 
 ## Thin node script: reads input, delegates the movement rule to PlayerMotion.
