@@ -29,7 +29,7 @@ run = [
 
 [tasks.lint]
 description = "Check GDScript formatting and lint rules outside addons/"
-run = ["gdformat --check src scenes tests", "gdlint src scenes tests"]
+run = ["gdformat --check src scenes tests tools", "gdlint src scenes tests tools"]
 
 [tasks.smoke]
 description = "Run every scenes/main_*.tscn headless for 120 frames; fail on a non-zero exit or any error line"
