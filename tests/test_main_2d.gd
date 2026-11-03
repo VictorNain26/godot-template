@@ -1,10 +1,10 @@
 extends GutTest
 
-# Wiring between the scene, player.gd and PlayerMotion; the rule's own cases
-# are covered by test_player_motion.gd.
+# Wiring between the 2D scene, player_2d.gd and PlayerMotion; the rule's own
+# cases are covered by test_player_motion.gd.
 
-const MAIN_SCENE := "res://scenes/main.tscn"
-const PLAYER_SCRIPT := "res://scenes/player.gd"
+const MAIN_SCENE := "res://scenes/main_2d.tscn"
+const PLAYER_SCRIPT := "res://scenes/player_2d.gd"
 const DELTA := 0.5
 const EPSILON := 0.001
 const DIRECTIONS := [
