@@ -21,6 +21,4 @@ jobs:
         with:
           lfs: true
       - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
-      - run: mise run lint
-      - run: mise run test
-      - run: mise run smoke
+      - run: mise run check

@@ -2,6 +2,10 @@
 godot = "4.7.2-stable"
 "pipx:gdtoolkit" = "4.5.0"
 
+[tasks.check]
+description = "Full local verification: lint, GUT tests, smoke run of the demo scenes"
+depends = ["lint", "test", "smoke"]
+
 [tasks.import]
 description = "Re-import when a script changed since the last import (registers class_name)"
 run = "test -f .godot/last_import && test -z \"$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)\" || { godot --headless --import --path . && touch .godot/last_import; }"
