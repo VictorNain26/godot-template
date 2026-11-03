@@ -8,10 +8,10 @@ const PLAYER_SCRIPT := "res://scenes/player_2d.gd"
 const DELTA := 0.5
 const EPSILON := 0.001
 const DIRECTIONS := [
-	["ui_right", Vector2.RIGHT],
-	["ui_left", Vector2.LEFT],
-	["ui_up", Vector2.UP],
-	["ui_down", Vector2.DOWN],
+	["move_right", Vector2.RIGHT],
+	["move_left", Vector2.LEFT],
+	["move_up", Vector2.UP],
+	["move_down", Vector2.DOWN],
 ]
 
 var _sender := GutInputSender.new(Input)
@@ -50,7 +50,7 @@ func test_no_input_keeps_player_still() -> void:
 
 
 func test_diagonal_input_moves_at_straight_line_speed() -> void:
-	_sender.action_down("ui_right")
-	_sender.action_down("ui_up")
+	_sender.action_down("move_right")
+	_sender.action_down("move_up")
 	_player._physics_process(DELTA)
 	assert_almost_eq((_player.position - _start).length(), _player.speed * DELTA, EPSILON)
