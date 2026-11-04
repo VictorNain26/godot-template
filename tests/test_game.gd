@@ -78,6 +78,47 @@ func test_restart_action_after_game_over_resets_the_round() -> void:
 	assert_false((_game.get_node("Hud/GameOver") as Control).visible)
 
 
+func _collect_current_orb() -> Orb:
+	var orb := _game.get_node("Orbs").get_child(0) as Orb
+	(_game.get_node("Player") as Node2D).global_position = orb.global_position
+	await wait_physics_frames(3)
+	return orb
+
+
+func test_reaching_ten_points_adds_a_third_enemy() -> void:
+	_game.round.score = 9
+	await _collect_current_orb()
+	await wait_physics_frames(1)
+	assert_eq(_game.round.score, 10)
+	assert_eq(_game.get_node("Enemies").get_child_count(), 3)
+
+
+func test_collect_shows_a_floating_points_label() -> void:
+	await _collect_current_orb()
+	var popups := _game.get_node("Popups")
+	assert_eq(popups.get_child_count(), 1)
+	assert_eq((popups.get_child(0) as Label).text, "+1")
+
+
+func test_seventh_orb_is_a_time_bonus_worth_five_seconds() -> void:
+	for i in 6:
+		await _collect_current_orb()
+		_game.round.time_left = 30.0
+	var bonus := _game.get_node("Orbs").get_child(0) as Orb
+	assert_eq(bonus.kind, PowerUps.Kind.TIME)
+	await _collect_current_orb()
+	assert_gt(_game.round.time_left, 34.5)
+
+
+func test_shield_absorbs_one_enemy_contact() -> void:
+	_game.round.shield = true
+	var enemy := _game.get_node("Enemies").get_child(0) as Node2D
+	(_game.get_node("Player") as Node2D).global_position = enemy.global_position
+	await wait_physics_frames(3)
+	assert_false(_game.round.over)
+	assert_false(_game.round.shield)
+
+
 func test_player_pushed_left_stops_at_the_arena_edge() -> void:
 	var player := _game.get_node("Player") as Player2D
 	_sender.action_down("move_left")
