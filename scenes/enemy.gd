@@ -15,6 +15,8 @@ const SPIN := 3.0
 @export var point_b: Vector2
 @export var speed: float = 140.0
 
+## Difficulty multiplier; scales elapsed patrol time so speed-ups never jump.
+var speed_scale := 1.0
 var _elapsed := 0.0
 
 
@@ -29,7 +31,7 @@ func reset() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	_elapsed += delta
+	_elapsed += delta * speed_scale
 	position = Patrol.position_at(point_a, point_b, speed, _elapsed)
 	rotation += SPIN * delta
 

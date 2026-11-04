@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://co0ypnbtbte21" path="res://scenes/arena_background.gd" id="2_iywne"]
 [ext_resource type="PackedScene" uid="uid://ra6po547y4l1" path="res://scenes/enemy.tscn" id="3_p57ef"]
 [ext_resource type="Script" uid="uid://dxleq4bgf3bdt" path="res://scenes/player_2d.gd" id="4_u5sy4"]
+[ext_resource type="Script" uid="uid://57r7gstp2pow" path="res://scenes/shield_ring.gd" id="5_an5d2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gee14"]
 size = Vector2(32, 32)
@@ -74,6 +75,10 @@ polygon = PackedVector2Array(-7, -7, 7, -7, 7, 7, -7, 7)
 
 [node name="Collision" type="CollisionShape2D" parent="Player" unique_id=1936101731]
 shape = SubResource("RectangleShape2D_gee14")
+
+[node name="Shield" type="Node2D" parent="Player" unique_id=478656229]
+visible = false
+script = ExtResource("5_an5d2")
 
 [node name="Burst" type="CPUParticles2D" parent="." unique_id=1275511889]
 emitting = false
@@ -152,3 +157,5 @@ layout_mode = 2
 text = "R / Entrée pour rejouer"
 label_settings = SubResource("LabelSettings_kvuet")
 horizontal_alignment = 1
+
+[node name="Popups" type="Node2D" parent="." unique_id=167242663]
