@@ -48,6 +48,37 @@ func test_hit_ends_round_and_keeps_time_left() -> void:
 	assert_almost_eq(_round.time_left, 50.0, EPSILON)
 
 
+func test_collect_adds_the_given_points() -> void:
+	_round.collect(3)
+	assert_eq(_round.score, 3)
+
+
+func test_add_time_extends_the_round() -> void:
+	_round.tick(50.0)
+	_round.add_time(5.0)
+	assert_almost_eq(_round.time_left, 15.0, EPSILON)
+
+
+func test_add_time_after_the_end_does_nothing() -> void:
+	_round.hit()
+	_round.add_time(5.0)
+	assert_almost_eq(_round.time_left, 60.0, EPSILON)
+
+
+func test_hit_with_shield_spends_it_and_keeps_playing() -> void:
+	_round.shield = true
+	_round.hit()
+	assert_false(_round.over)
+	assert_false(_round.shield)
+
+
+func test_second_hit_after_shield_ends_round() -> void:
+	_round.shield = true
+	_round.hit()
+	_round.hit()
+	assert_true(_round.over)
+
+
 func test_tick_after_the_end_changes_nothing() -> void:
 	_round.tick(10.0)
 	_round.hit()
