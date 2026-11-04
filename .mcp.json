@@ -2,7 +2,7 @@
   "mcpServers": {
     "godot-ai": {
       "type": "stdio",
-      "command": "uvx",
+      "command": "/home/ordiv/.local/bin/uvx",
       "args": [
         "--isolated",
         "--no-config",
@@ -32,8 +32,10 @@
         "--port",
         "8000",
         "--ws-port",
-        "9500"
-      ]
+        "9500",
+        "--disable-telemetry"
+      ],
+      "env": {}
     }
   }
 }
