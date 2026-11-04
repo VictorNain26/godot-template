@@ -1,21 +1,50 @@
 {
   "permissions": {
     "allow": [
+      "Bash(mise run check)",
       "Bash(mise run test)",
+      "Bash(mise run lint)",
+      "Bash(mise run smoke)",
+      "Bash(mise run import)",
+      "Bash(mise run export)",
+      "Bash(mise run export-smoke)",
       "Bash(godot --headless *)",
       "Bash(git status *)",
       "Bash(git diff *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "mcp__godot-ai__editor_state",
+      "mcp__godot-ai__scene_get_hierarchy",
+      "mcp__godot-ai__node_get_properties",
+      "mcp__godot-ai__session_activate",
+      "mcp__godot-ai__session_manage",
+      "mcp__godot-ai__logs_read",
+      "mcp__godot-ai__editor_screenshot",
+      "mcp__godot-ai__project_run",
+      "mcp__godot-ai__game_manage",
+      "mcp__godot-ai__test_run"
     ]
   },
+  "enabledMcpjsonServers": ["godot-ai"],
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}\"/tools/claude/post_edit_gd.sh",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"${CLAUDE_PROJECT_DIR}\" && mise run test 1>&2 || exit 2",
-            "timeout": 180
+            "command": "input=$(cat); cd \"${CLAUDE_PROJECT_DIR}\" && mise run check 1>&2 && exit 0; printf '%s' \"$input\" | mise exec -- jq -e '.stop_hook_active' >/dev/null && exit 0; exit 2",
+            "timeout": 300
           }
         ]
       }

@@ -1,2 +1,4 @@
 .godot/
+*.translation
 captures/
+build/

@@ -1,9 +1,72 @@
 [tools]
 godot = "4.7.2-stable"
+"pipx:gdtoolkit" = "4.5.0"
+jq = "1.8.2"
+
+[tasks.check]
+description = "Full local verification: lint, GUT tests, smoke run of the demo scenes"
+depends = ["lint", "test", "smoke"]
+
+[tasks.import]
+description = "Re-import when tools/import_fingerprint.sh differs from the last import"
+run = """
+[ -f .godot/last_import ] && [ "$(tools/import_fingerprint.sh)" = "$(cat .godot/last_import)" ] && exit 0
+godot --headless --import --path .
+tools/import_fingerprint.sh > .godot/last_import
+"""
 
 [tasks.test]
-description = "Re-import when a script changed since the last import (registers class_name), then run GUT headless"
+description = "Run GUT headless; GUT hangs if its post-run hook fails to parse, so check that first"
+depends = ["import"]
 run = [
-  "test -f .godot/last_import && test -z \"$(find . -name '*.gd' -not -path './addons/*' -newer .godot/last_import -print -quit)\" || { godot --headless --import --path . && touch .godot/last_import; }",
-  "godot --headless -s --path . addons/gut/gut_cmdln.gd",
+  "godot --headless --path . --check-only -s tests/gut_post_run.gd",
+  "timeout 120 godot --headless -s --path . addons/gut/gut_cmdln.gd",
 ]
+
+[tasks.lint]
+description = "Check GDScript formatting and lint rules outside addons/"
+run = ["gdformat --check src scenes tests tools", "gdlint src scenes tests tools"]
+
+[tasks.smoke]
+description = "Run every scenes/main_*.tscn through tools/smoke.sh"
+depends = ["import"]
+# check runs test and smoke together: keep one Godot at a time on the project.
+wait_for = ["test"]
+run = """
+status=0
+for scene in scenes/main_*.tscn; do
+  tools/smoke.sh "$scene" godot --path . "res://$scene" || status=1
+done
+exit $status
+"""
+
+[tasks.export-templates]
+description = "Download, SHA512-check and install the official export templates of the pinned Godot (skipped if installed)"
+run = """
+version=$(tools/godot_version.sh)
+dir="${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/$version"
+[ -f "$dir/linux_release.x86_64" ] && [ -f "$dir/windows_release_x86_64.exe" ] && exit 0
+tpz="Godot_v${version%.stable}-stable_export_templates.tpz"
+base="https://github.com/godotengine/godot/releases/download/${version%.stable}-stable"
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+cd "$work"
+curl -fsSL -o SHA512-SUMS.txt "$base/SHA512-SUMS.txt"
+curl -fsSL -o "$tpz" "$base/$tpz"
+grep " $tpz\\$" SHA512-SUMS.txt | sha512sum -c --strict -
+mkdir -p "$dir"
+unzip -q -j -o "$tpz" templates/version.txt templates/linux_release.x86_64 templates/windows_release_x86_64.exe -d "$dir"
+"""
+
+[tasks.export]
+description = "Export the Linux and Windows release builds to build/"
+depends = ["import", "export-templates"]
+run = """
+mkdir -p build/linux build/windows
+godot --headless --path . --export-release "Linux" build/linux/game.x86_64
+godot --headless --path . --export-release "Windows Desktop" build/windows/game.exe
+"""
+
+[tasks.export-smoke]
+description = "Run the exported Linux build through tools/smoke.sh"
+run = "tools/smoke.sh build/linux/game.x86_64 build/linux/game.x86_64"

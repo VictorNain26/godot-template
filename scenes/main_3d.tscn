@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/player_3d.gd" id="1_m7dbh"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3s264"]
+size = Vector2(20, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kefov"]
+size = Vector3(20, 0.2, 20)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_mt54i"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_le0cj"]
+
+[node name="Main3D" type="Node3D" unique_id=260269007]
+
+[node name="Camera" type="Camera3D" parent="." unique_id=289880292]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 8, 8)
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=915845431]
+transform = Transform3D(0.8660254, -0.38302222, 0.32139382, 0, 0.64278764, 0.76604444, -0.5, -0.66341394, 0.5566704, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=1262581467]
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=1608986952]
+mesh = SubResource("PlaneMesh_3s264")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor" unique_id=524007397]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_kefov")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=572812019]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_m7dbh")
+
+[node name="Mesh" type="MeshInstance3D" parent="Player" unique_id=985139310]
+mesh = SubResource("CapsuleMesh_mt54i")
+
+[node name="Collision" type="CollisionShape3D" parent="Player" unique_id=1156949416]
+shape = SubResource("CapsuleShape3D_le0cj")
