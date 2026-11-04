@@ -6,6 +6,7 @@ extends GutTest
 const GAME_SCENE := "res://scenes/game.tscn"
 const CENTER := Vector2(576, 324)
 const EPSILON := 0.001
+const RESTART_TICK_TOLERANCE := 0.1
 
 var _sender := GutInputSender.new(Input)
 var _game: Game
@@ -13,7 +14,8 @@ var _game: Game
 
 func before_each() -> void:
 	var scene: PackedScene = load(GAME_SCENE)
-	_game = add_child_autofree(scene.instantiate()) as Game
+	_game = scene.instantiate() as Game
+	add_child_autofree(_game)
 
 
 func after_each() -> void:
@@ -34,7 +36,7 @@ func test_scene_has_player_two_enemies_one_orb_and_hud() -> void:
 func test_round_starts_at_sixty_seconds_with_player_in_the_center() -> void:
 	assert_almost_eq(_game.round.time_left, 60.0, EPSILON)
 	assert_eq(_game.round.score, 0)
-	assert_eq(_game.get_node("Player").position, CENTER)
+	assert_eq((_game.get_node("Player") as Node2D).position, CENTER)
 	assert_false((_game.get_node("Hud/GameOver") as Control).visible)
 
 
@@ -69,9 +71,10 @@ func test_restart_action_after_game_over_resets_the_round() -> void:
 	_sender.action_down("restart")
 	await wait_process_frames(2)
 	assert_eq(_game.round.score, 0)
-	assert_almost_eq(_game.round.time_left, 60.0, EPSILON)
+	# The new round has already ticked for the awaited frames.
+	assert_almost_eq(_game.round.time_left, 60.0, RESTART_TICK_TOLERANCE)
 	assert_false(_game.round.over)
-	assert_eq(_game.get_node("Player").position, CENTER)
+	assert_eq((_game.get_node("Player") as Node2D).position, CENTER)
 	assert_false((_game.get_node("Hud/GameOver") as Control).visible)
 
 

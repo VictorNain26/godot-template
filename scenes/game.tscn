@@ -1,0 +1,154 @@
+[gd_scene format=3 uid="uid://dcmngl4lwy6we"]
+
+[ext_resource type="Script" uid="uid://cu31vaw04hkb3" path="res://scenes/game.gd" id="1_lbhrr"]
+[ext_resource type="Script" uid="uid://co0ypnbtbte21" path="res://scenes/arena_background.gd" id="2_iywne"]
+[ext_resource type="PackedScene" uid="uid://ra6po547y4l1" path="res://scenes/enemy.tscn" id="3_p57ef"]
+[ext_resource type="Script" uid="uid://dxleq4bgf3bdt" path="res://scenes/player_2d.gd" id="4_u5sy4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gee14"]
+size = Vector2(32, 32)
+
+[sub_resource type="LabelSettings" id="LabelSettings_0tnpc"]
+font_size = 44
+font_color = Color(1, 0.81960785, 0.4, 1)
+outline_size = 10
+outline_color = Color(0.05882353, 0.0627451, 0.1254902, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_vtaks"]
+font_size = 44
+font_color = Color(0.8784314, 0.9843137, 0.9882353, 1)
+outline_size = 10
+outline_color = Color(0.05882353, 0.0627451, 0.1254902, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_kvpfn"]
+font_size = 72
+font_color = Color(0.96862745, 0.14509805, 0.52156866, 1)
+outline_size = 14
+outline_color = Color(0.05882353, 0.0627451, 0.1254902, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_dinhu"]
+font_size = 48
+font_color = Color(1, 0.81960785, 0.4, 1)
+outline_size = 10
+outline_color = Color(0.05882353, 0.0627451, 0.1254902, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_kvuet"]
+font_size = 24
+font_color = Color(0.6039216, 0.64705884, 0.81960785, 1)
+
+[node name="Game" type="Node2D" unique_id=569365366]
+script = ExtResource("1_lbhrr")
+
+[node name="Background" type="Node2D" parent="." unique_id=662847171]
+script = ExtResource("2_iywne")
+
+[node name="Orbs" type="Node2D" parent="." unique_id=732819358]
+
+[node name="Enemies" type="Node2D" parent="." unique_id=1467330011]
+
+[node name="Sweeper" parent="Enemies" unique_id=2130805694 instance=ExtResource("3_p57ef")]
+point_a = Vector2(200, 150)
+point_b = Vector2(950, 150)
+speed = 160.0
+
+[node name="Drifter" parent="Enemies" unique_id=755152072 instance=ExtResource("3_p57ef")]
+point_a = Vector2(950, 500)
+point_b = Vector2(200, 500)
+speed = 130.0
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1561630723]
+position = Vector2(576, 324)
+script = ExtResource("4_u5sy4")
+
+[node name="Glow" type="Polygon2D" parent="Player" unique_id=721732519]
+color = Color(0.3, 0.79, 0.94, 0.22)
+polygon = PackedVector2Array(-24, -24, 24, -24, 24, 24, -24, 24)
+
+[node name="Body" type="Polygon2D" parent="Player" unique_id=1867385808]
+color = Color(0.29803923, 0.7882353, 0.9411765, 1)
+polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[node name="Core" type="Polygon2D" parent="Player" unique_id=2018259382]
+color = Color(0.8784314, 0.9843137, 0.9882353, 1)
+polygon = PackedVector2Array(-7, -7, 7, -7, 7, 7, -7, 7)
+
+[node name="Collision" type="CollisionShape2D" parent="Player" unique_id=1936101731]
+shape = SubResource("RectangleShape2D_gee14")
+
+[node name="Burst" type="CPUParticles2D" parent="." unique_id=1275511889]
+emitting = false
+amount = 32
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 120.0
+initial_velocity_max = 280.0
+damping_min = 200.0
+damping_max = 300.0
+scale_amount_min = 3.0
+scale_amount_max = 6.0
+color = Color(1, 0.81960785, 0.4, 1)
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1798761376]
+position = Vector2(576, 324)
+process_callback = 0
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=191807792]
+
+[node name="Score" type="Label" parent="Hud" unique_id=1576160080]
+offset_left = 28.0
+offset_top = 16.0
+offset_right = 29.0
+offset_bottom = 39.0
+text = "0"
+label_settings = SubResource("LabelSettings_0tnpc")
+
+[node name="Time" type="Label" parent="Hud" unique_id=1148981641]
+offset_left = 1004.0
+offset_top = 16.0
+offset_right = 1124.0
+offset_bottom = 76.0
+text = "60"
+label_settings = SubResource("LabelSettings_vtaks")
+horizontal_alignment = 2
+
+[node name="GameOver" type="Control" parent="Hud" unique_id=2120309736]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="Dim" type="ColorRect" parent="Hud/GameOver" unique_id=498914235]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.04, 0.04, 0.09, 0.78)
+
+[node name="Box" type="VBoxContainer" parent="Hud/GameOver" unique_id=943572953]
+layout_mode = 0
+offset_left = 326.0
+offset_top = 194.0
+offset_right = 826.0
+offset_bottom = 454.0
+alignment = 1
+
+[node name="Title" type="Label" parent="Hud/GameOver/Box" unique_id=395604058]
+layout_mode = 2
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_kvpfn")
+horizontal_alignment = 1
+
+[node name="Final" type="Label" parent="Hud/GameOver/Box" unique_id=657303499]
+layout_mode = 2
+text = "Score 0"
+label_settings = SubResource("LabelSettings_dinhu")
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Hud/GameOver/Box" unique_id=1510587695]
+layout_mode = 2
+text = "R / Entrée pour rejouer"
+label_settings = SubResource("LabelSettings_kvuet")
+horizontal_alignment = 1
