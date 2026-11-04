@@ -64,6 +64,8 @@ func test_committed_mcp_json_matches_bundled_addon() -> void:
 	assert_eq(cfg.load(PLUGIN_CFG), OK)
 	var text := FileAccess.get_file_as_string(MCP_JSON)
 	var found := McpPin.problems(
-		text, cfg.get_value("plugin", "version"), cfg.get_value("plugin", "dependency_cutoff")
+		text,
+		cfg.get_value("plugin", "version", ""),
+		cfg.get_value("plugin", "dependency_cutoff", "")
 	)
 	assert_eq(found, PackedStringArray(), "Run Configure at project scope in the Godot AI dock")

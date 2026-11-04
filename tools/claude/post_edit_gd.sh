@@ -22,13 +22,13 @@ esac
 [ -f "$rel" ] || exit 0
 
 out=$({
-	mise run import >/dev/null &&
+	mise run import &&
 		godot --headless --path . --log-file "${TMPDIR:-/tmp}/godot-check.log" --check-only -s "$rel" &&
 		mise exec -- gdformat --check "$rel" &&
 		mise exec -- gdlint "$rel"
 } 2>&1)
 if [ $? -ne 0 ]; then
-	printf '%s\n' "$out" | grep -v -e '^Godot Engine v' -e '^\[import\]' -e '^\s*$' >&2
+	printf '%s\n' "$out" | grep -v -e 'Godot Engine v' -e '^\s*$' >&2
 	exit 2
 fi
 exit 0
