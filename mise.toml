@@ -77,8 +77,12 @@ if [ ! -f "$exe" ]; then
   mkdir -p "$dir"
   unzip -q -o "$work/$zip" -d "$dir"
 fi
-nohup "$exe" -e --path "$(wslpath -w "$PWD")" >/dev/null 2>&1 &
-echo "Godot $release for Windows opened on $(wslpath -w "$PWD")"
+# Start from a neutral Windows directory: the Godot AI dock's Configure runs
+# `claude mcp remove --scope project` in the editor's working directory
+# (addons/godot_ai/clients/claude_code.gd), which would empty this .mcp.json.
+project=$(wslpath -w "$PWD")
+(cd "$dir" && nohup "$exe" -e --path "$project" >/dev/null 2>&1 &)
+echo "Godot $release for Windows opened on $project"
 """
 
 [tasks.export]
