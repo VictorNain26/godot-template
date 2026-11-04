@@ -3,7 +3,7 @@ extends GutTest
 # Wiring of the Orb Rush 2D scene: game.gd ties RoundState, orbs, enemies,
 # player and HUD together. The rules themselves are covered by their own tests.
 
-const GAME_SCENE := "res://scenes/game.tscn"
+const GAME_SCENE := "res://scenes/main_2d.tscn"
 const CENTER := Vector2(576, 324)
 const EPSILON := 0.001
 const RESTART_TICK_TOLERANCE := 0.1
@@ -24,7 +24,7 @@ func after_each() -> void:
 
 
 func test_scene_has_player_two_enemies_one_orb_and_hud() -> void:
-	assert_not_null(_game, "game.tscn root must run game.gd")
+	assert_not_null(_game, "main_2d.tscn root must run game.gd")
 	assert_not_null(_game.get_node_or_null("Player") as Player2D)
 	assert_eq(_game.get_node("Enemies").get_child_count(), 2)
 	assert_eq(_game.get_node("Orbs").get_child_count(), 1)
