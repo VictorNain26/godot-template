@@ -9,7 +9,8 @@ const COUNT_CASES := [[0, 2], [9, 2], [10, 3], [30, 5], [99, 5]]
 
 
 func test_enemy_speed_scale(p: Array = use_parameters(SPEED_CASES)) -> void:
-	assert_almost_eq(Difficulty.enemy_speed_scale(p[0]), p[1] as float, EPSILON)
+	var expected: float = p[1]
+	assert_almost_eq(Difficulty.enemy_speed_scale(p[0]), expected, EPSILON)
 
 
 func test_enemy_count(p: Array = use_parameters(COUNT_CASES)) -> void:
