@@ -2,3 +2,4 @@
 *.translation
 captures/
 build/
+override.cfg
