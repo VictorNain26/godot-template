@@ -6,7 +6,8 @@ set -uo pipefail
 label=$1
 shift
 rc=0
-out=$(timeout 120 "$@" --headless --log-file "${TMPDIR:-/tmp}/godot-smoke.log" --quit-after 120 2>&1) || rc=$?
+mkdir -p .godot
+out=$(timeout 120 "$@" --headless --log-file "$PWD/.godot/godot-smoke.log" --quit-after 120 2>&1) || rc=$?
 errors=$(printf '%s\n' "$out" | grep -E '^(USER )?(SCRIPT )?ERROR' || true)
 if [ "$rc" -ne 0 ] || [ -n "$errors" ]; then
 	printf 'smoke failed: %s (exit %s)\n%s\n' "$label" "$rc" "$errors" >&2
