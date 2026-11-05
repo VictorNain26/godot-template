@@ -58,6 +58,33 @@ mkdir -p "$dir"
 unzip -q -j -o "$tpz" templates/version.txt templates/linux_release.x86_64 templates/windows_release_x86_64.exe -d "$dir"
 """
 
+[tasks.editor]
+description = "From WSL: install the pinned Godot for Windows (SHA512-checked, skipped if present) and open this project in it"
+run = """
+version=$(tools/godot_version.sh)
+release="${version%.stable}-stable"
+zip="Godot_v${release}_win64.exe.zip"
+local_appdata=$(cd /mnt/c && cmd.exe /c 'echo %LOCALAPPDATA%' | tr -d '\\r')
+dir="$(wslpath "$local_appdata")/Programs/godot/$release"
+exe="$dir/Godot_v${release}_win64.exe"
+if [ ! -f "$exe" ]; then
+  base="https://github.com/godotengine/godot/releases/download/$release"
+  work=$(mktemp -d)
+  trap 'rm -rf "$work"' EXIT
+  curl -fsSL -o "$work/SHA512-SUMS.txt" "$base/SHA512-SUMS.txt"
+  curl -fsSL -o "$work/$zip" "$base/$zip"
+  (cd "$work" && grep " $zip\\$" SHA512-SUMS.txt | sha512sum -c --strict -)
+  mkdir -p "$dir"
+  unzip -q -o "$work/$zip" -d "$dir"
+fi
+# Start from a neutral Windows directory: the Godot AI dock's Configure runs
+# `claude mcp remove --scope project` in the editor's working directory
+# (addons/godot_ai/clients/claude_code.gd), which would empty this .mcp.json.
+project=$(wslpath -w "$PWD")
+(cd "$dir" && nohup "$exe" -e --path "$project" >/dev/null 2>&1 &)
+echo "Godot $release for Windows opened on $project"
+"""
+
 [tasks.export]
 description = "Export the Linux and Windows release builds to build/"
 depends = ["import", "export-templates"]

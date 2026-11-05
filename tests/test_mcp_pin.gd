@@ -68,4 +68,11 @@ func test_committed_mcp_json_matches_bundled_addon() -> void:
 		cfg.get_value("plugin", "version", ""),
 		cfg.get_value("plugin", "dependency_cutoff", "")
 	)
-	assert_eq(found, PackedStringArray(), "Run Configure at project scope in the Godot AI dock")
+	assert_eq(
+		found,
+		PackedStringArray(),
+		(
+			"Emptied by the dock's Configure? git restore .mcp.json. After an addon"
+			+ " update, copy the dock's Run this manually args (see CLAUDE.md)"
+		)
+	)
