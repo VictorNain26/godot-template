@@ -22,7 +22,8 @@
       "mcp__godot-ai__project_run",
       "mcp__godot-ai__game_manage",
       "mcp__godot-ai__test_run"
-    ]
+    ],
+    "deny": ["Edit(**/*.tscn)", "Edit(**/*.tres)", "Edit(**/*.uid)"]
   },
   "enabledMcpjsonServers": ["godot-ai"],
   "hooks": {
