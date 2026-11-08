@@ -1,11 +1,9 @@
 # Projet Godot
 
-- Vérification : `mise run check` (son contenu est dans `mise.toml`). Le hook `Stop` et la CI la lancent ; le hook `PostToolUse` vérifie chaque `.gd` écrit (`tools/claude/post_edit_gd.sh`).
-- La logique de jeu est en fonctions pures dans `src/`, testée par GUT dans `tests/` ; les scripts de nœuds restent minces et appellent `src/`.
-- Les entrées passent par les actions `move_*` de `project.godot`, pas par les `ui_*` ni des touches en dur.
-- L'éditeur tourne sous Windows (image, son et clavier natifs) : l'utilisateur le lance depuis WSL avec `mise run editor`, hors du sandbox. C'est lui que godot-ai pilote (scènes, lancement du jeu, entrées, captures). S'il n'est pas ouvert, demande-le au lieu de le lancer.
-- godot-ai est déclaré dans `.mcp.json` : Claude Code (WSL) lance le pont `godot-ai attach` avec le `uvx.exe` de Windows, car le pont ne parle qu'au serveur local de l'éditeur. Les arguments sont ceux que le dock Godot AI de l'éditeur Windows écrit pour Claude Code Windows ; `tests/test_mcp_pin.gd` échoue si la version épinglée ne suit plus `addons/godot_ai` : après une mise à jour de l'addon, reprendre ces arguments, puis redémarrer la session. Ce lancement direct n'est pas celui que documente godot-ai (pour WSL face à un éditeur Windows, la voie supportée est SSH : section « Agents on another machine or in a container » de `docs/client-configuration.md` du dépôt hi-godot/godot-ai) ; c'est le repli s'il casse. Si ses outils manquent dans la session, lire son log (`~/.cache/claude-cli-nodejs/<projet>/mcp-logs-godot-ai/`) : un `uvx.exe` qui refuse une option des arguments se met à jour sous Windows avec l'installeur officiel de uv. Sinon, demande-le.
-- Un changement visible se vérifie dans le jeu lancé avec `/verify` (`.claude/skills/verify/SKILL.md`).
-- Export : `mise run export` puis `mise run export-smoke` (presets dans `export_presets.cfg`) ; la CI les lance hors PR et publie les binaires. Sous le sandbox, Godot ne peut pas écrire dans `/tmp` et produit un binaire cassé : l'export local se lance hors sandbox.
-- Le rendu Compatibility (`rendering_method` dans `project.godot`) est choisi parce que Vulkan n'a pas de pilote matériel sous WSL2. Un jeu 3D qui veut l'éclairage avancé passe à Forward+ et se teste sous Windows.
-- Nouveau jeu : cloner ce dépôt, changer `config/name` dans `project.godot`, lancer `mise install` et `git lfs install`, puis garder la démo `*_2d` ou `*_3d` (scène, script, test) et supprimer l'autre ; `src/player_motion.gd` et son test sont à remplacer par les règles du jeu.
+- Vérification complète : `mise run check` (lint, tests GUT, smoke). Le hook `Stop` lance `mise run lint`, `check` passe par la CI.
+- La logique de jeu est en fonctions pures dans `src/`, testée par GUT ; les scripts de nœuds restent minces et appellent `src/`.
+- Les entrées passent par les actions `move_*` de `project.godot`, plutôt que par les `ui_*` ou des touches en dur.
+- L'éditeur tourne sous Windows : l'utilisateur le lance depuis WSL avec `mise run editor`, hors du sandbox, et c'est lui que godot-ai pilote. S'il n'est pas ouvert, le lui demander.
+- Un changement visible se vérifie dans le jeu lancé avec `/verify`.
+- Export : `mise run export` puis `mise run export-smoke`. Sous le sandbox, Godot ne peut pas écrire dans `/tmp` et produit un binaire cassé : l'export local se lance hors sandbox.
+- Le rendu Compatibility est choisi parce que Vulkan n'a pas de pilote matériel sous WSL2. Un jeu 3D qui veut l'éclairage avancé passe à Forward+ et se teste sous Windows.
