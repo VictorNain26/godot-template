@@ -34,6 +34,16 @@
         "--ws-port",
         "9500"
       ]
+    },
+    "godot-runtime": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "${CLAUDE_PROJECT_DIR:-.}/tools/mcp_runtime.sh"
+      ],
+      "env": {
+        "GODOT_MCP_DISABLE_ELICITATION": "true"
+      }
     }
   }
 }

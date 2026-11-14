@@ -2,6 +2,8 @@
 godot = "4.7.2-stable"
 "pipx:gdtoolkit" = "4.5.0"
 jq = "1.8.2"
+# Runs the godot-runtime MCP server (tools/mcp_runtime.sh).
+node = "22.23.4"
 
 [tasks.check]
 description = "Full local verification: lint, GUT tests, smoke run of the demo scenes"

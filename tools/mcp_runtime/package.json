@@ -1,0 +1,8 @@
+{
+  "name": "godot-template-mcp-runtime",
+  "private": true,
+  "description": "Pins the godot-mcp-runtime MCP server launched by tools/mcp_runtime.sh.",
+  "dependencies": {
+    "godot-mcp-runtime": "4.0.1"
+  }
+}

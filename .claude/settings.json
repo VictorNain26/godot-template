@@ -21,11 +21,18 @@
       "mcp__godot-ai__editor_screenshot",
       "mcp__godot-ai__project_run",
       "mcp__godot-ai__game_manage",
-      "mcp__godot-ai__test_run"
+      "mcp__godot-ai__test_run",
+      "mcp__godot-runtime__run_project",
+      "mcp__godot-runtime__stop_project",
+      "mcp__godot-runtime__get_debug_output",
+      "mcp__godot-runtime__take_screenshot",
+      "mcp__godot-runtime__simulate_input",
+      "mcp__godot-runtime__get_ui_elements",
+      "mcp__godot-runtime__run_script"
     ],
     "deny": ["Edit(**/*.tscn)", "Edit(**/*.tres)", "Edit(**/*.uid)"]
   },
-  "enabledMcpjsonServers": ["godot-ai"],
+  "enabledMcpjsonServers": ["godot-ai", "godot-runtime"],
   "hooks": {
     "PostToolUse": [
       {
