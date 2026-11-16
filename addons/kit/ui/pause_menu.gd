@@ -7,8 +7,9 @@ extends CanvasLayer
 ## options page, and any other id is handed to the game through `chosen`:
 ## the menu hides and play stays paused, so nothing moves during the game's
 ## own transition; the game unpauses when it is ready.
-## `blocked`, when set, is asked before the pause key opens the menu (during a
-## scene change, say). `moved` lets the game play a sound when the selection
+## `blocked`, when set, is asked before any key reaches the menu: while it
+## answers true (a scene change, say), the pause key neither opens nor
+## closes it. `moved` lets the game play a sound when the selection
 ## moves; the kit itself makes none.
 
 signal chosen(id: StringName)
@@ -86,7 +87,8 @@ func is_open() -> bool:
 func _unhandled_input(event: InputEvent) -> void:
 	if options.visible or _resuming or not MenuInput.fresh(event):
 		return
-	if blocked.is_valid() and not get_tree().paused and bool(blocked.call()):
+	# During the game's own transition, even the pause key waits.
+	if blocked.is_valid() and bool(blocked.call()):
 		return
 	if event.is_action_pressed(&"pause"):
 		_set_paused(not get_tree().paused)

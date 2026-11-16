@@ -145,3 +145,19 @@ func test_the_pointer_picks_an_entry_of_the_pause() -> void:
 	assert_str(_selected()).contains(Loc.t("Options"))
 	rows[2].clicked.emit(1)
 	assert_array(chosen).is_equal([&"title"])
+
+
+func test_nothing_reaches_the_pause_while_the_game_says_it_is_busy() -> void:
+	# A pause opened, or play resumed, in the middle of a scene change.
+	await _load()
+	var busy := [true]
+	pause.blocked = func() -> bool: return busy[0]
+	KitSim.tap(KitSim.key(KEY_ESCAPE))
+	assert_bool(get_tree().paused).is_false()
+	busy[0] = false
+	KitSim.tap(KitSim.key(KEY_ESCAPE))
+	assert_bool(get_tree().paused).is_true()
+	# Paused, then busy (the game's own transition): the key does not resume.
+	busy[0] = true
+	KitSim.tap(KitSim.key(KEY_ESCAPE))
+	assert_bool(get_tree().paused).is_true()
