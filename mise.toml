@@ -143,13 +143,19 @@ esac
 git diff --quiet && git diff --cached --quiet || { echo "commit or stash your changes first" >&2; exit 1; }
 git remote get-url template >/dev/null 2>&1 || git remote add template "$url"
 git fetch template main
-split=$(git subtree split --prefix=addons/kit template/main)
+# Split where addons/kit exists: subtree refuses a prefix the work tree lacks.
+tmp=$(mktemp -d)
+git worktree add -q --detach "$tmp" template/main
+split=$(git -C "$tmp" subtree split --prefix=addons/kit HEAD)
+git worktree remove --force "$tmp"
 if git log --grep="git-subtree-dir: addons/kit" --format=%H -1 | grep -q .; then
   git subtree merge --prefix=addons/kit "$split" --squash -m "chore: kit from godot-template"
 else
   # A game made from the template holds the kit as plain files: hand it to subtree once.
-  git rm -rq addons/kit
-  git commit -qm "chore: addons/kit is now pulled from godot-template"
+  if [ -d addons/kit ]; then
+    git rm -rq addons/kit
+    git commit -qm "chore: addons/kit is now pulled from godot-template"
+  fi
   git subtree add --prefix=addons/kit "$split" --squash -m "chore: kit from godot-template"
 fi
 """
