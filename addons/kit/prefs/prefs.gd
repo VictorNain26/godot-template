@@ -8,6 +8,7 @@ extends Node
 ##   ACTIONS        the actions the player may rebind, with the name the menu shows
 ##   FIXED_ACTIONS  actions not offered for rebinding (pause), kept off taken keys
 ##   HELP           the legend of the title and pause screens: [label, [actions]]
+##   SELF_TEST      optional: the script `-- --selftest` starts, in place of the kit's
 ##   static func skin()  optional: sets UiStyle's tokens to give the menus a look
 
 signal changed
@@ -52,6 +53,7 @@ const PAD_NAMES := {
 var actions := {}
 var fixed_actions: Array[StringName] = []
 var help_entries: Array = []
+var self_test_path := "res://addons/kit/dev/self_test.gd"
 
 var settings := Settings.new()
 ## Off in tests, in recordings and without a window: the player's file is
@@ -84,7 +86,7 @@ func _ready() -> void:
 	apply()
 	# An exported build checks itself with `-- --selftest` (mise run export-smoke).
 	if OS.get_cmdline_user_args().has("--selftest"):
-		add_child((load("res://addons/kit/dev/self_test.gd") as GDScript).new())
+		add_child((load(self_test_path) as GDScript).new())
 
 
 ## Reads the game's kit config and applies its skin. A game without one gets
@@ -106,6 +108,9 @@ func load_config() -> void:
 			fixed_actions.append(StringName(str(action)))
 	found = constants.get("HELP", [])
 	help_entries = (found as Array).duplicate() if found is Array else []
+	found = constants.get("SELF_TEST", "")
+	if found is String and found != "":
+		self_test_path = found
 	if config.has_method(&"skin"):
 		config.call(&"skin")
 		UiStyle.reset()

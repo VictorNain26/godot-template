@@ -23,7 +23,7 @@ Le kit donne le **comportement** des menus, pas leur **apparence** : un jeu gard
    - `internationalization/locale/translations` : `res://addons/kit/locale/en.po` puis le fichier du jeu ; `locale/fallback="fr"` (sinon un joueur français lit l'anglais) ;
    - `gui/theme/custom_font` : la police de lecture du skin ;
    - les actions `pause` et `interact`, et `kit/config` si la config n'est pas `res://kit_config.gd`.
-2. `kit_config.gd`, à la racine : `ACTIONS` (les actions que le joueur peut changer, avec leur nom dans le menu), `FIXED_ACTIONS`, `HELP` (la légende des écrans titre et pause), et au besoin `static func skin()` et `static func self_test()`.
+2. `kit_config.gd`, à la racine : `ACTIONS` (les actions que le joueur peut changer, avec leur nom dans le menu), `FIXED_ACTIONS`, `HELP` (la légende des écrans titre et pause), et au besoin `static func skin()`, `static func self_test()` (des contrôles de plus pour l'auto-test du kit) ou `SELF_TEST` (le chemin d'un auto-test propre au jeu, lancé à la place de celui du kit).
 3. Les exports incluent `addons/kit/fonts/*.txt` (les licences ne sont pas des ressources) et excluent `addons/kit/tests/*` et `addons/kit/dev/mouse_check.*`.
 4. `mise run test` lance les tests du jeu et ceux du kit.
 
