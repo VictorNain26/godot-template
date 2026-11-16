@@ -60,14 +60,15 @@ func test_a_gamepad_alone_gets_through_pause_and_options() -> void:
 	assert_bool(get_tree().paused).is_false()
 
 
-func test_a_choice_of_the_game_is_handed_to_it_and_play_goes_on() -> void:
+func test_a_choice_of_the_game_is_handed_to_it_while_play_stays_paused() -> void:
+	# The game runs its own transition (a fade, a save) before play goes on.
 	await _load()
 	KitSim.tap(KitSim.key(KEY_ESCAPE))
 	KitSim.tap(KitSim.key(KEY_UP))
 	assert_str(_selected()).contains(Loc.t("Écran titre"))
 	KitSim.tap(KitSim.key(KEY_ENTER))
 	assert_array(chosen).is_equal([&"title"])
-	assert_bool(get_tree().paused).is_false()
+	assert_bool(get_tree().paused).is_true()
 	assert_bool(pause.is_open()).is_false()
 
 

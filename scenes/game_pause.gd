@@ -14,4 +14,5 @@ func _init() -> void:
 
 func _on_chosen(id: StringName) -> void:
 	if id == &"title":
+		get_tree().paused = false
 		get_tree().change_scene_to_file(TITLE_SCENE)

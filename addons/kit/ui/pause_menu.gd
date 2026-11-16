@@ -4,8 +4,9 @@ extends CanvasLayer
 ## Pause overlay. Runs while the tree is paused. Part of the kit (addons/kit).
 ##
 ## `entries` are [id, label] pairs: "resume" resumes, "options" opens the
-## options page, and any other id is handed to the game through `chosen`,
-## after which the menu hides (the game goes to the title, restarts, saves).
+## options page, and any other id is handed to the game through `chosen`:
+## the menu hides and play stays paused, so nothing moves during the game's
+## own transition; the game unpauses when it is ready.
 ## `blocked`, when set, is asked before the pause key opens the menu (during a
 ## scene change, say). `moved` lets the game play a sound when the selection
 ## moves; the kit itself makes none.
@@ -146,7 +147,6 @@ func _choose() -> void:
 			options.open()
 		_:
 			_root.visible = false
-			get_tree().paused = false
 			chosen.emit(id)
 
 

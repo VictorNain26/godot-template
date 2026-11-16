@@ -121,7 +121,7 @@ run = "python3 tools/web_smoke.py"
 description = "Click through the kit's menus with real mouse events under Xvfb (MOUSE CHECK OK)"
 depends = ["import"]
 run = """
-out=$(timeout 600 xvfb-run -a -s "-screen 0 1280x720x24" godot --path . --rendering-driver opengl3 res://addons/kit/dev/mouse_check.tscn 2>&1)
+out=$(timeout 600 xvfb-run -a -s "-screen 0 1280x720x24" godot --path . --rendering-driver opengl3 res://addons/kit/dev/mouse_check.tscn 2>&1) || true
 if printf '%s\n' "$out" | grep -q "MOUSE CHECK OK"; then
   echo "MOUSE CHECK OK"
 else

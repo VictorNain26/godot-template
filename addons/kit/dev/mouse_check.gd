@@ -62,7 +62,9 @@ func _pause() -> void:
 	KitSim.tap(KitSim.key(KEY_ESCAPE))
 	await _frames(4)
 	await _click(rows[0].get_global_rect().get_center())
-	await _frames(6)
+	# Resume waits two physics ticks; an empty scene draws many frames in that time.
+	for i in 4:
+		await get_tree().physics_frame
 	_expect(not get_tree().paused, "a click on Resume does not resume")
 	pause.free()
 
