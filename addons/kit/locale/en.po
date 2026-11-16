@@ -1,0 +1,94 @@
+# English for the texts of the kit (addons/kit). French is the source language.
+msgid ""
+msgstr ""
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "%d %%"
+msgstr "%d%%"
+
+msgid "%s : %s"
+msgstr "%s: %s"
+
+msgid "Annuler"
+msgstr "Cancel"
+
+msgid "Appuie sur une touche"
+msgstr "Press a key"
+
+msgid "Choisir"
+msgstr "Choose"
+
+msgid "Non"
+msgstr "Off"
+
+msgid "OPTIONS"
+msgstr "OPTIONS"
+
+msgid "Oui"
+msgstr "On"
+
+msgid "PAUSE"
+msgstr "PAUSED"
+
+msgid "Reprendre"
+msgstr "Resume"
+
+msgid "Retour"
+msgstr "Back"
+
+msgid "Régler"
+msgstr "Adjust"
+
+msgid "TOUCHES"
+msgstr "CONTROLS"
+
+msgid "Valider"
+msgstr "Select"
+
+msgid "Volume général"
+msgstr "Master volume"
+
+msgid "Musique"
+msgstr "Music"
+
+msgid "Effets sonores"
+msgstr "Sound effects"
+
+msgid "Plein écran"
+msgstr "Fullscreen"
+
+msgid "Secousses d'écran"
+msgstr "Screen shake"
+
+msgid "Taille du texte"
+msgstr "Text size"
+
+msgid "Langue"
+msgstr "Language"
+
+msgid "Touches"
+msgstr "Controls"
+
+msgid "Rétablir les touches"
+msgstr "Reset controls"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Nouvelle partie"
+msgstr "New game"
+
+msgid "Continuer"
+msgstr "Continue"
+
+msgid "Écran titre"
+msgstr "Title screen"
+
+msgid "Commencer"
+msgstr "Start"
+
+msgid "Quitter"
+msgstr "Quit"

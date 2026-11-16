@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Claude Code PostToolUse hook (Edit|Write): parse-check the GDScript file that
-# was just written, then format-check and lint that file. Exit 2 sends errors to Claude.
+# Claude Code PostToolUse hook (Edit|Write): compile the project's scripts
+# with the autoloads registered (tools/validate.gd: `--check-only` reports
+# false errors for any script that uses an autoload), then format-check and
+# lint the file just written. Exit 2 sends errors to Claude.
 set -uo pipefail
 
 project=${CLAUDE_PROJECT_DIR:-$(pwd)}
@@ -16,14 +18,15 @@ case "$file" in
 esac
 
 rel=${file#"$project"/}
+# Vendored addons are not ours to lint; the kit is.
 case "$rel" in
-/* | addons/*) exit 0 ;;
+/* | addons/gdUnit4/* | addons/godot_ai/*) exit 0 ;;
 esac
 [ -f "$rel" ] || exit 0
 
 out=$({
 	mise run import &&
-		godot --headless --path . --log-file "$project/.godot/godot-check.log" --check-only -s "$rel" &&
+		godot --headless --path . --log-file "$project/.godot/godot-check.log" -s res://tools/validate.gd &&
 		mise exec -- gdformat --check "$rel" &&
 		mise exec -- gdlint "$rel"
 } 2>&1)

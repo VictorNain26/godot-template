@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/player_3d.gd" id="1_m7dbh"]
+[ext_resource type="Script" path="res://scenes/game_pause.gd" id="2_3s264"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3s264"]
 size = Vector2(20, 20)
@@ -39,3 +40,6 @@ mesh = SubResource("CapsuleMesh_mt54i")
 
 [node name="Collision" type="CollisionShape3D" parent="Player" unique_id=1156949416]
 shape = SubResource("CapsuleShape3D_le0cj")
+
+[node name="Pause" type="CanvasLayer" parent="." unique_id=1772760531]
+script = ExtResource("2_3s264")

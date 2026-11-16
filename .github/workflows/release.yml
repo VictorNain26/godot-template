@@ -1,0 +1,104 @@
+name: release
+
+# Publishes a version: on a tag such as v0.2.0, or on a manual run from main
+# with "publish" ticked (the run then creates the v<config/version> tag).
+# Exports Linux, Windows and the web, runs the Linux build's self-test,
+# creates the GitHub Release with the zips and the CHANGELOG entry of that
+# version as notes, and puts the web build on GitHub Pages
+# (Settings > Pages > Source: GitHub Actions must be chosen once, by hand).
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the release and the web build"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          lfs: true
+      - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
+      - id: godot
+        run: echo "version=$(tools/godot_version.sh)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.local/share/godot/export_templates
+          key: godot-export-templates-web-${{ steps.godot.outputs.version }}
+
+      - name: A manual release is made from main
+        if: inputs.publish && github.ref != 'refs/heads/main'
+        run: |
+          echo "Publish from main, not from $GITHUB_REF_NAME" >&2
+          exit 1
+
+      - name: The tag names the version of the project
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match config/version $version in project.godot" >&2
+            exit 1
+          fi
+
+      - run: mise run export
+      - run: mise run export-smoke
+
+      - name: Zip each build
+        run: |
+          name=$(sed -n 's/^config\/name="\(.*\)"/\1/p' project.godot | tr '[:upper:] ' '[:lower:]-')
+          version=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)
+          mkdir -p dist
+          for platform in linux windows web; do
+            (cd "build/$platform" && zip -qr "../../dist/$name-$version-$platform.zip" .)
+          done
+          ls -l dist
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: builds
+          path: dist/
+          if-no-files-found: error
+
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/') || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)
+          # The notes are the CHANGELOG entry of this version.
+          awk -v v="$version" '$0 ~ "^## " v " " {on=1; next} /^## / {on=0} on' CHANGELOG.md > notes.md
+          [ -s notes.md ] || { echo "No CHANGELOG entry for $version" >&2; exit 1; }
+          gh release create "v$version" dist/*.zip --target "$GITHUB_SHA" --title "v$version" --notes-file notes.md
+
+      - name: Hand the web build to Pages
+        if: startsWith(github.ref, 'refs/tags/') || inputs.publish
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build/web/
+
+  pages:
+    if: startsWith(github.ref, 'refs/tags/') || inputs.publish
+    needs: export
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy the web build
+        id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

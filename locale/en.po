@@ -1,0 +1,30 @@
+# English for the texts of this game. French is the source language: each
+# msgid is the French text exactly as written in the code. The kit's own
+# texts are in addons/kit/locale/en.po.
+msgid ""
+msgstr ""
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Monter"
+msgstr "Up"
+
+msgid "Descendre"
+msgstr "Down"
+
+msgid "Gauche"
+msgstr "Left"
+
+msgid "Droite"
+msgstr "Right"
+
+msgid "Agir"
+msgstr "Interact"
+
+msgid "Marcher"
+msgstr "Move"
+
+msgid "Pause"
+msgstr "Pause"
