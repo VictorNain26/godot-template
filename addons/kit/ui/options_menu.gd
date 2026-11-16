@@ -21,12 +21,6 @@ const NAMES := {
 	&"reset": "Rétablir les touches",
 	&"back": "Retour",
 }
-const UP: Array[StringName] = [&"ui_up", &"move_up"]
-const DOWN: Array[StringName] = [&"ui_down", &"move_down"]
-const LEFT: Array[StringName] = [&"ui_left", &"move_left"]
-const RIGHT: Array[StringName] = [&"ui_right", &"move_right"]
-const ACCEPT: Array[StringName] = [&"ui_accept", &"interact", &"jump"]
-const BACK: Array[StringName] = [&"ui_cancel", &"pause"]
 ## Width of the panel before the player's text scale.
 const WIDTH := 640
 
@@ -266,17 +260,17 @@ func _input(event: InputEvent) -> void:
 			# Only keys are rebound: a gamepad button gives up, or it could never leave.
 			listening = false
 			refresh()
-	elif _is(event, BACK):
+	elif MenuInput.pressed(event, MenuInput.BACK):
 		back()
-	elif _is(event, UP):
+	elif MenuInput.pressed(event, MenuInput.UP):
 		move(-1)
-	elif _is(event, DOWN):
+	elif MenuInput.pressed(event, MenuInput.DOWN):
 		move(1)
-	elif _is(event, LEFT):
+	elif MenuInput.pressed(event, MenuInput.LEFT):
 		change(-1)
-	elif _is(event, RIGHT):
+	elif MenuInput.pressed(event, MenuInput.RIGHT):
 		change(1)
-	elif _is(event, ACCEPT):
+	elif MenuInput.accepts(event):
 		accept()
 
 
@@ -304,13 +298,6 @@ func _click(direction: int, i: int) -> void:
 	else:
 		accept()
 	refresh()
-
-
-func _is(event: InputEvent, actions: Array[StringName]) -> bool:
-	for action in actions:
-		if InputMap.has_action(action) and event.is_action_pressed(action):
-			return true
-	return false
 
 
 func _yes_no(value: bool) -> String:

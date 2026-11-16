@@ -141,8 +141,14 @@ func test_the_pointer_picks_an_entry_of_the_pause() -> void:
 	var rows: Array[MenuRow] = []
 	for node in pause.find_children("*", "MenuRow", true, false):
 		rows.append(node as MenuRow)
+	var moves := [0]
+	pause.moved.connect(func() -> void: moves[0] += 1)
 	rows[1].pointed.emit()
 	assert_str(_selected()).contains(Loc.t("Options"))
+	# The game hears the pointer move the selection, as it hears the keys:
+	# once per new entry, not for every motion over the same one.
+	rows[1].pointed.emit()
+	assert_int(moves[0]).is_equal(1)
 	rows[2].clicked.emit(1)
 	assert_array(chosen).is_equal([&"title"])
 
@@ -161,3 +167,24 @@ func test_nothing_reaches_the_pause_while_the_game_says_it_is_busy() -> void:
 	busy[0] = true
 	KitSim.tap(KitSim.key(KEY_ESCAPE))
 	assert_bool(get_tree().paused).is_true()
+
+
+func test_the_options_accept_what_every_other_menu_accepts() -> void:
+	# The options page once kept its own list of accept keys, with a game's
+	# jump in it: the jump key confirmed in the options and nowhere else.
+	InputMap.add_action(&"jump")
+	InputMap.action_add_event(&"jump", KitSim.key(KEY_J))
+	await _load()
+	KitSim.tap(KitSim.key(KEY_ESCAPE))
+	KitSim.tap(KitSim.key(KEY_J))
+	assert_array(chosen).is_empty()
+	assert_bool(pause.is_open()).is_true()
+	var options := pause.options
+	options.open()
+	options.index = OptionsMenu.MAIN.find(&"shake")
+	var shake := Prefs.settings.shake
+	KitSim.tap(KitSim.key(KEY_J))
+	InputMap.erase_action(&"jump")
+	assert_bool(Prefs.settings.shake).is_equal(shake)
+	KitSim.tap(KitSim.key(KEY_ENTER))
+	assert_bool(Prefs.settings.shake).is_not_equal(shake)
