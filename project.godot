@@ -27,7 +27,7 @@ gdscript/warnings/unsafe_cast=2
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
 
 [input]
 

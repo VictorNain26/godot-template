@@ -4,8 +4,8 @@ godot = "4.7.2-stable"
 jq = "1.8.2"
 
 [tasks.check]
-description = "Full local verification: lint, GUT tests, smoke run of the demo scenes"
-depends = ["lint", "test", "smoke"]
+description = "Full local verification: lint, compile everything, GdUnit4 tests, smoke run of every scene"
+depends = ["lint", "validate", "test", "smoke"]
 
 [tasks.import]
 description = "Re-import when tools/import_fingerprint.sh differs from the last import"
@@ -15,13 +15,16 @@ godot --headless --import --path .
 tools/import_fingerprint.sh > .godot/last_import
 """
 
-[tasks.test]
-description = "Run GUT headless; GUT hangs if its post-run hook fails to parse, so check that first"
+[tasks.validate]
+description = "Load every script, scene and shader with the autoloads registered; fail on the first that does not compile"
 depends = ["import"]
-run = [
-  "godot --headless --path . --check-only -s tests/gut_post_run.gd",
-  "timeout 120 godot --headless -s --path . addons/gut/gut_cmdln.gd",
-]
+run = "godot --headless --path . -s res://tools/validate.gd"
+
+[tasks.test]
+description = "Run GdUnit4 headless on tests/ and addons/kit/tests/ (tools/gdunit.sh res://tests/test_x.gd for one file)"
+depends = ["import"]
+wait_for = ["validate"]
+run = "tools/gdunit.sh"
 
 [tasks.lint]
 description = "Check GDScript formatting and lint rules outside addons/"
@@ -31,7 +34,7 @@ run = ["gdformat --check src scenes tests tools", "gdlint src scenes tests tools
 description = "Run every scenes/main_*.tscn through tools/smoke.sh"
 depends = ["import"]
 # check runs test and smoke together: keep one Godot at a time on the project.
-wait_for = ["test"]
+wait_for = ["validate", "test"]
 run = """
 status=0
 for scene in scenes/main_*.tscn; do

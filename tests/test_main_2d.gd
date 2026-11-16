@@ -1,4 +1,4 @@
-extends GutTest
+extends GdUnitTestSuite
 
 # Wiring between the 2D scene, player_2d.gd and PlayerMotion; the rule's own
 # cases are covered by test_player_motion.gd.
@@ -8,6 +8,7 @@ const PLAYER_SCRIPT := "res://scenes/player_2d.gd"
 const DELTA := 0.5
 const EPSILON := 0.001
 const TOLERANCE := Vector2.ONE * EPSILON
+const ACTIONS: Array[String] = ["move_left", "move_right", "move_up", "move_down"]
 const DIRECTIONS := [
 	["move_right", Vector2.RIGHT],
 	["move_left", Vector2.LEFT],
@@ -15,43 +16,54 @@ const DIRECTIONS := [
 	["move_down", Vector2.DOWN],
 ]
 
-var _sender := GutInputSender.new(Input)
 var _player: Player2D
 var _start: Vector2
 
 
-func before_each() -> void:
+func before_test() -> void:
 	var scene: PackedScene = load(MAIN_SCENE)
-	var main: Node = add_child_autofree(scene.instantiate())
+	var main: Node = auto_free(scene.instantiate())
+	add_child(main)
 	_player = main.get_node_or_null("Player") as Player2D
 	if _player != null:
 		_start = _player.position
 
 
-func after_each() -> void:
-	_sender.release_all()
-	_sender.clear()
+func after_test() -> void:
+	for action in ACTIONS:
+		Input.action_release(action)
 
 
 func test_player_is_a_body_running_player_script() -> void:
-	assert_not_null(_player, "Main must have a CharacterBody2D named Player")
-	assert_eq(_player.get_script(), load(PLAYER_SCRIPT))
+	(
+		assert_object(_player)
+		. override_failure_message("Main must have a CharacterBody2D named Player")
+		. is_not_null()
+	)
+	assert_object(_player.get_script()).is_same(load(PLAYER_SCRIPT))
 
 
-func test_each_action_moves_player_its_way(p: Array = use_parameters(DIRECTIONS)) -> void:
-	_sender.action_down(p[0])
+# GdUnit4 fills test_parameters itself: it is never read by the test.
+func test_each_action_moves_player_its_way(
+	action: String,
+	direction: Vector2,
+	# gdlint:ignore = unused-argument
+	test_parameters := DIRECTIONS
+) -> void:
+	Input.action_press(action)
 	_player._physics_process(DELTA)
-	var expected: Vector2 = p[1] * _player.speed * DELTA
-	assert_almost_eq(_player.position - _start, expected, TOLERANCE)
+	var expected: Vector2 = direction * _player.speed * DELTA
+	assert_vector(_player.position - _start).is_equal_approx(expected, TOLERANCE)
 
 
 func test_no_input_keeps_player_still() -> void:
 	_player._physics_process(DELTA)
-	assert_almost_eq(_player.position, _start, TOLERANCE)
+	assert_vector(_player.position).is_equal_approx(_start, TOLERANCE)
 
 
 func test_diagonal_input_moves_at_straight_line_speed() -> void:
-	_sender.action_down("move_right")
-	_sender.action_down("move_up")
+	Input.action_press("move_right")
+	Input.action_press("move_up")
 	_player._physics_process(DELTA)
-	assert_almost_eq((_player.position - _start).length(), _player.speed * DELTA, EPSILON)
+	var moved := (_player.position - _start).length()
+	assert_float(moved).is_equal_approx(_player.speed * DELTA, EPSILON)

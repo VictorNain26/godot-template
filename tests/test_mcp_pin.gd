@@ -1,4 +1,4 @@
-extends GutTest
+extends GdUnitTestSuite
 
 # The committed .mcp.json launches the godot-ai server; it must pin the same
 # version and dependency cutoff as the bundled addon, or the server and the
@@ -27,52 +27,54 @@ func _pinned_args(version: String, cutoff: String) -> Array:
 
 func test_matching_pins_have_no_problem() -> void:
 	var text := _mcp(_pinned_args(VERSION, CUTOFF))
-	assert_eq(McpPin.problems(text, VERSION, CUTOFF), PackedStringArray())
+	assert_array(McpPin.problems(text, VERSION, CUTOFF)).is_empty()
 
 
 func test_other_version_is_reported() -> void:
 	var text := _mcp(_pinned_args("4.3.0", CUTOFF))
 	var found := McpPin.problems(text, VERSION, CUTOFF)
-	assert_eq(found.size(), 1)
-	assert_string_contains(found[0], "godot-ai==4.4.0")
+	assert_int(found.size()).is_equal(1)
+	assert_str(found[0]).contains("godot-ai==4.4.0")
 
 
 func test_other_cutoff_is_reported() -> void:
 	var text := _mcp(_pinned_args(VERSION, "2026-10-01T00:00:00Z"))
 	var found := McpPin.problems(text, VERSION, CUTOFF)
-	assert_eq(found.size(), 1)
-	assert_string_contains(found[0], CUTOFF)
+	assert_int(found.size()).is_equal(1)
+	assert_str(found[0]).contains(CUTOFF)
 
 
 func test_missing_server_entry_is_reported() -> void:
 	var text := JSON.stringify({"mcpServers": {"blender": {"command": "uvx", "args": []}}})
 	var found := McpPin.problems(text, VERSION, CUTOFF)
-	assert_eq(found.size(), 1)
-	assert_string_contains(found[0], "godot-ai")
+	assert_int(found.size()).is_equal(1)
+	assert_str(found[0]).contains("godot-ai")
 
 
 func test_invalid_json_is_reported() -> void:
-	assert_eq(McpPin.problems("{not json", VERSION, CUTOFF).size(), 1)
+	assert_int(McpPin.problems("{not json", VERSION, CUTOFF).size()).is_equal(1)
 
 
 func test_missing_file_is_reported() -> void:
-	assert_eq(McpPin.problems("", VERSION, CUTOFF).size(), 1)
+	assert_int(McpPin.problems("", VERSION, CUTOFF).size()).is_equal(1)
 
 
 func test_committed_mcp_json_matches_bundled_addon() -> void:
 	var cfg := ConfigFile.new()
-	assert_eq(cfg.load(PLUGIN_CFG), OK)
+	assert_int(cfg.load(PLUGIN_CFG)).is_equal(OK)
 	var text := FileAccess.get_file_as_string(MCP_JSON)
 	var found := McpPin.problems(
 		text,
 		cfg.get_value("plugin", "version", ""),
 		cfg.get_value("plugin", "dependency_cutoff", "")
 	)
-	assert_eq(
-		found,
-		PackedStringArray(),
-		(
-			"Emptied by the dock's Configure? git restore .mcp.json. After an addon"
-			+ " update, copy the dock's Run this manually args (see CLAUDE.md)"
+	(
+		assert_array(found)
+		. override_failure_message(
+			(
+				"Emptied by the dock's Configure? git restore .mcp.json. After an addon"
+				+ " update, copy the dock's Run this manually args (see CLAUDE.md)"
+			)
 		)
+		. is_empty()
 	)
