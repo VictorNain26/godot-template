@@ -45,23 +45,8 @@ func test_the_code_shows_texts_through_loc() -> void:
 	assert_int(_shown().size()).is_greater(10)
 
 
-## Every message of every translation file the project declares, in `locale`.
-static func messages(locale: String) -> Dictionary:
-	var out := {}
-	var files: PackedStringArray = ProjectSettings.get_setting(
-		"internationalization/locale/translations", PackedStringArray()
-	)
-	for path in files:
-		var translation := load(path) as Translation
-		if translation == null or translation.locale != locale:
-			continue
-		for message in translation.get_message_list():
-			out[str(message)] = str(translation.get_message(message))
-	return out
-
-
 func test_every_shown_text_has_its_english() -> void:
-	var english := messages("en")
+	var english := Loc.messages("en")
 	assert_dict(english).is_not_empty()
 	var missing: Array[String] = []
 	for text in _shown():
@@ -81,3 +66,14 @@ func test_the_project_falls_back_to_french() -> void:
 	assert_str(str(ProjectSettings.get_setting("internationalization/locale/fallback"))).is_equal(
 		"fr"
 	)
+
+
+func test_a_text_shown_with_its_english_in_any_file_is_not_missing() -> void:
+	# The game's texts and the kit's are in two files: each must count.
+	Loc.seen.clear()
+	for text: String in [Loc.t("Reprendre"), Loc.t(str(Prefs.actions.values()[0]))]:
+		assert_str(text).is_not_empty()
+	assert_array(Loc.missing("en")).is_empty()
+	Loc.t("Un texte qui n'existe dans aucune langue")
+	assert_array(Loc.missing("en")).is_equal(["Un texte qui n'existe dans aucune langue"])
+	Loc.seen.clear()

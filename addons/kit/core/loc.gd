@@ -40,13 +40,26 @@ static func mark(texts: Array) -> void:
 
 ## Texts asked for so far that `locale` has no translation for.
 static func missing(locale: String) -> Array[String]:
-	var known := {}
-	var translation := TranslationServer.get_translation_object(locale)
-	if translation != null:
-		for message in translation.get_message_list():
-			known[message] = true
+	var known := messages(locale)
 	var out: Array[String] = []
 	for text: String in seen:
 		if not known.has(text):
 			out.append(text)
+	return out
+
+
+## Every message the project's translation files hold for `locale`, with its
+## translation. A language can be spread over several files (the kit's and
+## the game's): get_translation_object() hands back only one of them.
+static func messages(locale: String) -> Dictionary:
+	var out := {}
+	var files: PackedStringArray = ProjectSettings.get_setting(
+		"internationalization/locale/translations", PackedStringArray()
+	)
+	for path in files:
+		var translation := load(path) as Translation
+		if translation == null or translation.locale != locale:
+			continue
+		for message in translation.get_message_list():
+			out[str(message)] = str(translation.get_message(message))
 	return out
