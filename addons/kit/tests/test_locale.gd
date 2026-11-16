@@ -77,3 +77,39 @@ func test_a_text_shown_with_its_english_in_any_file_is_not_missing() -> void:
 	Loc.t("Un texte qui n'existe dans aucune langue")
 	assert_array(Loc.missing("en")).is_equal(["Un texte qui n'existe dans aucune langue"])
 	Loc.seen.clear()
+
+
+func test_the_kits_english_holds_only_the_kits_texts() -> void:
+	# A game's text kept in the kit's file is translated in that game by
+	# chance, and left out of every game that pulls the kit without it.
+	var kit_code := ""
+	var files: Array[String] = []
+	_files("res://addons/kit", files)
+	for file in files:
+		kit_code += FileAccess.get_file_as_string(file)
+	var translation: Translation = load("res://addons/kit/locale/en.po")
+	var foreign: Array[String] = []
+	for message: StringName in translation.get_message_list():
+		var text := str(message)
+		if text != "" and not kit_code.contains('"%s"' % text.replace('"', '\\"')):
+			foreign.append(text)
+	assert_array(foreign).override_failure_message("not the kit's: %s" % [foreign]).is_empty()
+
+
+func test_the_kits_menus_ask_only_for_texts_with_their_english() -> void:
+	# Texts handed to Loc.t through a variable escape the search above: open
+	# every page of the kit's menus and ask Loc what they showed.
+	Loc.seen.clear()
+	var pause: PauseMenu = auto_free(PauseMenu.new())
+	add_child(pause)
+	await get_tree().process_frame
+	pause.options.open()
+	for row in pause.options.rows():
+		pause.options.row_text(row)
+	pause.options.on_keys = true
+	pause.options.listening = true
+	pause.options.refresh()
+	pause.legend()
+	await get_tree().process_frame
+	assert_array(Loc.missing("en")).is_empty()
+	Loc.seen.clear()
