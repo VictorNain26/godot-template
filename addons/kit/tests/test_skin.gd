@@ -136,3 +136,11 @@ func test_no_screen_goes_round_the_style() -> void:
 				. override_failure_message("%s uses %s" % [file, banned])
 				. is_false()
 			)
+
+
+func test_the_contrast_measure_matches_its_definition() -> void:
+	assert_float(UiStyle.contrast(Color.BLACK, Color.WHITE)).is_equal_approx(21.0, 0.01)
+	assert_float(UiStyle.contrast(Color.WHITE, Color.WHITE)).is_equal_approx(1.0, 0.001)
+	# A published reference pair: #767676 on white is the lightest grey that passes AA.
+	assert_float(UiStyle.contrast(Color("767676"), Color.WHITE)).is_between(4.5, 4.6)
+	assert_object(UiStyle.over(Color.WHITE, 0.5, Color.BLACK)).is_equal(Color(0.5, 0.5, 0.5))

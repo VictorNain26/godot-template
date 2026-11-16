@@ -172,8 +172,13 @@ func test_nothing_reaches_the_pause_while_the_game_says_it_is_busy() -> void:
 func test_the_options_accept_what_every_other_menu_accepts() -> void:
 	# The options page once kept its own list of accept keys, with a game's
 	# jump in it: the jump key confirmed in the options and nowhere else.
-	InputMap.add_action(&"jump")
-	InputMap.action_add_event(&"jump", KitSim.key(KEY_J))
+	# A game may have its own jump (Emberwake does): borrow it, and give back
+	# exactly what was there.
+	var had := InputMap.has_action(&"jump")
+	if not had:
+		InputMap.add_action(&"jump")
+	var j := KitSim.key(KEY_J)
+	InputMap.action_add_event(&"jump", j)
 	await _load()
 	KitSim.tap(KitSim.key(KEY_ESCAPE))
 	KitSim.tap(KitSim.key(KEY_J))
@@ -184,7 +189,10 @@ func test_the_options_accept_what_every_other_menu_accepts() -> void:
 	options.index = OptionsMenu.MAIN.find(&"shake")
 	var shake := Prefs.settings.shake
 	KitSim.tap(KitSim.key(KEY_J))
-	InputMap.erase_action(&"jump")
+	if had:
+		InputMap.action_erase_event(&"jump", j)
+	else:
+		InputMap.erase_action(&"jump")
 	assert_bool(Prefs.settings.shake).is_equal(shake)
 	KitSim.tap(KitSim.key(KEY_ENTER))
 	assert_bool(Prefs.settings.shake).is_not_equal(shake)
