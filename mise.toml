@@ -136,6 +136,10 @@ description = "Pull the latest kit from godot-template's main into addons/kit wi
 run = """
 set -e
 url=${KIT_TEMPLATE_URL:-https://github.com/VictorNain26/godot-template.git}
+# The template is where the kit is made: there is nothing to pull into it.
+case "$(git remote get-url origin 2>/dev/null)" in
+*/godot-template | */godot-template.git) echo "this is the kit's source repository: nothing to pull" >&2; exit 1 ;;
+esac
 git diff --quiet && git diff --cached --quiet || { echo "commit or stash your changes first" >&2; exit 1; }
 git remote get-url template >/dev/null 2>&1 || git remote add template "$url"
 git fetch template main
