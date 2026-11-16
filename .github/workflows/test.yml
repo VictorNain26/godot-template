@@ -25,7 +25,8 @@ jobs:
       - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
       - run: mise run check
       # Real mouse events need a window.
-      - run: command -v xvfb-run || (sudo apt-get update && sudo apt-get install -y xvfb)
+      # A window and software OpenGL for Godot under Xvfb.
+      - run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libgl1
       - run: mise run mouse-check
 
   export:
