@@ -28,7 +28,10 @@ run = "tools/gdunit.sh"
 
 [tasks.lint]
 description = "Check GDScript formatting and lint rules outside addons/"
-run = ["gdformat --check src scenes tests tools", "gdlint src scenes tests tools"]
+run = [
+  "gdformat --check src scenes tests tools addons/kit kit_config.gd",
+  "gdlint src scenes tests tools addons/kit kit_config.gd",
+]
 
 [tasks.smoke]
 description = "Run every scenes/main_*.tscn through tools/smoke.sh"
