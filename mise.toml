@@ -27,7 +27,7 @@ wait_for = ["validate"]
 run = "tools/gdunit.sh"
 
 [tasks.lint]
-description = "Check GDScript formatting and lint rules outside addons/"
+description = "Check GDScript formatting and lint rules: the project and the kit, not the vendored addons"
 run = [
   "gdformat --check src scenes tests tools addons/kit kit_config.gd",
   "gdlint src scenes tests tools addons/kit kit_config.gd",

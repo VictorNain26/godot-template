@@ -19,7 +19,7 @@ Le template ne choisit ni le genre, ni la 2D ou la 3D, ni l'apparence : il déma
 | `mise run export` puis `export-smoke` | exporte Linux, Windows et web, et lance l'auto-test de l'exécutable Linux |
 | `mise run web-smoke` | charge la version web dans Chromium et en fait une capture |
 | `mise run mouse-check` | clique pour de vrai dans les menus, sous Xvfb |
-| `mise run shots` | captures de l'écran titre, des options et de la pause |
+| `mise run shots` | captures de l'écran titre, des options, d'une démo et de sa pause |
 | `mise run editor` | ouvre l'éditeur Windows depuis WSL, que pilote godot-ai |
 
 ## Ce qui est à chaque jeu, et ce qui est commun

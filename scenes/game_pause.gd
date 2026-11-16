@@ -8,7 +8,8 @@ const TITLE_SCENE := "res://scenes/title.tscn"
 
 
 func _init() -> void:
-	super([[&"resume", "Reprendre"], [&"options", "Options"], [&"title", "Écran titre"]])
+	# The kit's entries are these three; a game passes its own list to super().
+	super()
 	chosen.connect(_on_chosen)
 
 

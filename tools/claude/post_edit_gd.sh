@@ -26,7 +26,7 @@ esac
 
 out=$({
 	mise run import &&
-		godot --headless --path . --log-file "$project/.godot/godot-check.log" -s res://tools/validate.gd &&
+		mise exec -- godot --headless --path . --log-file "$project/.godot/godot-check.log" -s res://tools/validate.gd &&
 		mise exec -- gdformat --check "$rel" &&
 		mise exec -- gdlint "$rel"
 } 2>&1)

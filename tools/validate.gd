@@ -5,15 +5,26 @@ extends SceneTree
 ## a script that uses one is checked correctly. A test script that does not
 ## parse would otherwise be skipped by the test runner without a failure.
 
-const ROOTS: Array[String] = ["res://src", "res://scenes", "res://tests", "res://addons/kit"]
+const ROOTS: Array[String] = [
+	"res://src",
+	"res://scenes",
+	"res://tests",
+	"res://tools",
+	"res://addons/kit",
+	"res://kit_config.gd"
+]
 const EXTENSIONS: Array[String] = ["gd", "tscn", "gdshader"]
 
 
 func _initialize() -> void:
 	var failed: Array[String] = []
 	var count := 0
+	var me: Script = get_script()
 	for root_dir in ROOTS:
 		for path in _files(root_dir):
+			# Loading the running script again, uncached, hangs the engine.
+			if path == me.resource_path:
+				continue
 			count += 1
 			var res := ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_IGNORE)
 			if res == null:
@@ -31,6 +42,8 @@ func _initialize() -> void:
 
 func _files(dir_path: String) -> Array[String]:
 	var out: Array[String] = []
+	if dir_path.get_extension() in EXTENSIONS:
+		return [dir_path]
 	var dir := DirAccess.open(dir_path)
 	if dir == null:
 		return out

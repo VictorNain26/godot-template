@@ -31,7 +31,7 @@ Un jeu Godot 4.7 en GDScript, parti du template `godot-template`. Le kit (`addon
 - Les avertissements de typage sont des erreurs (`project.godot`, section `debug`) : un transtypage depuis un `Variant` (`x.get("a") as Foo`) ne compile pas ; typer la variable (`var a: Foo = x.get("a")`).
 - Sans fenêtre, Godot dort 6,9 ms à chaque image (`low_processor_usage_mode_sleep_usec`) et aucun événement souris n'atteint un `Control`.
 - Sans `internationalization/locale/fallback="fr"`, un jeu réglé sur le français afficherait la traduction anglaise.
-- `get_translation_object(langue)` ne rend qu'un des fichiers d'une langue : lire tous ceux de `internationalization/locale/translations`.
+- `get_translation_object(langue)` ne rend qu'un des fichiers d'une langue (le kit en a un, le jeu un autre) : passer par `Loc.messages(langue)`, qui les lit tous.
 - Un export n'embarque que des ressources : un `.txt` ou un `.json` lu à l'exécution s'ajoute à `include_filter` (`export_presets.cfg`). L'auto-test de l'exécutable le vérifie.
 - `set_anchors_preset()` appelé dans `_ready` ne déplace pas un Control déjà dans l'arbre : utiliser `set_anchors_and_offsets_preset()`.
 - Xvfb met environ 3 s à accepter une fenêtre ; sans carte graphique, le jeu y tourne à quelques images par seconde.
