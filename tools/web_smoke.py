@@ -5,7 +5,7 @@ Serves build/web on localhost, opens it in headless Chrome, waits for the
 engine to start and the first screen to draw, then saves build/web_smoke.png and fails if the page
 logged an error. Look at the picture: a black canvas passes the log check too.
 
-    tools/export.sh && python3 tools/web_smoke.py
+    mise run export && mise run web-smoke
 
 Needs Chrome or Chromium and `pip install playwright` (the browser itself is
 the one already installed; nothing is downloaded).
@@ -41,7 +41,7 @@ def main() -> int:
         print("WEB SMOKE SKIPPED: no Chrome or Chromium on this machine", file=sys.stderr)
         return 2
     if not (WEB / "index.html").exists():
-        print("WEB SMOKE FAILED: run tools/export.sh first", file=sys.stderr)
+        print("WEB SMOKE FAILED: run mise run export first", file=sys.stderr)
         return 1
 
     handler = functools.partial(Quiet, directory=str(WEB))

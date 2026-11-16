@@ -73,7 +73,7 @@ func test_committed_mcp_json_matches_bundled_addon() -> void:
 		. override_failure_message(
 			(
 				"Emptied by the dock's Configure? git restore .mcp.json. After an addon"
-				+ " update, copy the dock's Run this manually args (see CLAUDE.md)"
+				+ " update, copy the dock's Run this manually args (.claude/skills/godot-ai-bridge/SKILL.md)"
 			)
 		)
 		. is_empty()

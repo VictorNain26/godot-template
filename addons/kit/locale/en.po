@@ -78,17 +78,5 @@ msgstr "Reset controls"
 msgid "Options"
 msgstr "Options"
 
-msgid "Nouvelle partie"
-msgstr "New game"
-
-msgid "Continuer"
-msgstr "Continue"
-
 msgid "Écran titre"
 msgstr "Title screen"
-
-msgid "Commencer"
-msgstr "Start"
-
-msgid "Quitter"
-msgstr "Quit"

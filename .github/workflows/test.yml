@@ -24,8 +24,7 @@ jobs:
           lfs: true
       - uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
       - run: mise run check
-      # Real mouse events need a window.
-      # A window and software OpenGL for Godot under Xvfb.
+      # Real mouse events need a window: Xvfb, and software OpenGL for Godot.
       - run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libgl1
       - run: mise run mouse-check
 

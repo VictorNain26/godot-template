@@ -8,9 +8,9 @@ extends RefCounted
 const LEFT := HORIZONTAL_ALIGNMENT_LEFT
 const CENTER := HORIZONTAL_ALIGNMENT_CENTER
 const RIGHT := HORIZONTAL_ALIGNMENT_RIGHT
-## A key drawn as an arrow, not as a letter.
 ## Height of a key cap, as a multiple of the size of its label.
 const KEY_HEIGHT := 1.3
+## A key drawn as an arrow, not as a letter.
 const ARROWS := {"<": Vector2.LEFT, ">": Vector2.RIGHT, "^": Vector2.UP, "v": Vector2.DOWN}
 
 

@@ -4,8 +4,6 @@ extends GdUnitTestSuite
 ## legend of keys, and how a label and its value are written in each
 ## language. Part of the kit (addons/kit).
 
-const NBSP := " "
-
 
 func after_test() -> void:
 	Prefs.settings = Settings.new()
@@ -41,10 +39,10 @@ func _rows(menu: OptionsMenu) -> Array[MenuRow]:
 
 func test_french_never_lets_a_line_start_with_a_high_mark() -> void:
 	_use("fr")
-	assert_str(Loc.t("%s : %s") % ["Épée", "J"]).is_equal("Épée" + NBSP + ": J")
-	assert_str(Loc.t("%d %%") % 100).is_equal("100" + NBSP + "%")
+	assert_str(Loc.t("%s : %s") % ["Épée", "J"]).is_equal("Épée" + Loc.NBSP + ": J")
+	assert_str(Loc.t("%d %%") % 100).is_equal("100" + Loc.NBSP + "%")
 	assert_str(Loc.french_spaces("« Non ! » dit-il ; puis : quoi ?")).is_equal(
-		"«~Non~!~» dit-il~; puis~: quoi~?".replace("~", NBSP)
+		"«~Non~!~» dit-il~; puis~: quoi~?".replace("~", Loc.NBSP)
 	)
 	# A text without those marks is shown exactly as written.
 	assert_str(Loc.t("Reprendre")).is_equal("Reprendre")
@@ -56,7 +54,6 @@ func test_english_writes_a_value_and_a_percentage_its_own_way() -> void:
 	assert_str(Loc.t("%d %%") % 100).is_equal("100%")
 	var menu := _menu()
 	assert_str(menu.row_text(&"text")).is_equal("Text size: 100%")
-	assert_str(Prefs.help_line()).not_contains(" :")
 
 
 func test_a_row_shows_its_label_and_its_value_in_two_columns() -> void:
@@ -175,15 +172,15 @@ func test_a_panel_of_figures_keeps_its_place_while_they_count() -> void:
 	var size := UiStyle.BODY
 	var panels: Array[Rect2] = []
 	for time: String in ["0:00.00", "0:32.45", "1:11.11"]:
-		var rows := [["Temps", time], ["Braises", "44 / 75"]]
+		var rows := [["Temps", time], ["Pièces", "44 / 75"]]
 		await _paint(func(c: Control) -> void: panels.append(UiDraw.stats(c, corner, rows, size)))
 	assert_int(panels.size()).is_greater_equal(3)
 	for panel in panels:
 		assert_that(panel).is_equal(panels[0])
 		assert_that(panel.end).is_equal(corner)
 	# A long note wraps inside the panel: it grows down, never sideways.
-	var note := "Des ronces gardent encore des secrets sur l'île. Le Tison les brûle."
-	var rows := [["Temps", "0:32.45"], ["Braises", "44 / 75"]]
+	var note := "Il reste des secrets dans ce niveau. Une clé ouvre la dernière porte."
+	var rows := [["Temps", "0:32.45"], ["Pièces", "44 / 75"]]
 	var noted: Array[Rect2] = []
 	await _paint(
 		func(c: Control) -> void:
@@ -198,9 +195,9 @@ func test_a_headline_too_long_for_the_screen_is_made_to_fit() -> void:
 	for scale: float in Settings.TEXT_SCALES:
 		var asked := int(round(UiStyle.TITLE * scale))
 		var font := UiStyle.display(asked)
-		var size := UiDraw.fit(font, "LE FOYER BRÛLE DE NOUVEAU", asked, room)
+		var size := UiDraw.fit(font, "LA NUIT RECULE DE NOUVEAU", asked, room)
 		var wide := (
-			UiStyle.display(size).get_string_size("LE FOYER BRÛLE DE NOUVEAU", 0, -1, size).x
+			UiStyle.display(size).get_string_size("LA NUIT RECULE DE NOUVEAU", 0, -1, size).x
 		)
 		assert_float(wide).is_less_equal(room + 8.0)
 		# Made smaller, it is still larger than what is read under it.

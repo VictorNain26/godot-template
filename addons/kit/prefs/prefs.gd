@@ -9,7 +9,9 @@ extends Node
 ##   FIXED_ACTIONS  actions not offered for rebinding (pause), kept off taken keys
 ##   HELP           the legend of the title and pause screens: [label, [actions]]
 ##   SELF_TEST      optional: the script `-- --selftest` starts, in place of the kit's
-##   static func skin()  optional: sets UiStyle's tokens to give the menus a look
+##   static func skin()       optional: sets UiStyle's tokens to give the menus a look
+##   static func self_test()  optional: the game's own checks for the kit's
+##                            self-test, returning what failed; it may await frames
 
 signal changed
 
@@ -92,10 +94,10 @@ func _ready() -> void:
 ## Reads the game's kit config and applies its skin. A game without one gets
 ## no rebindable action and the kit's own look.
 func load_config() -> void:
-	var path := str(ProjectSettings.get_setting(CONFIG_SETTING, DEFAULT_CONFIG))
-	if not ResourceLoader.exists(path):
+	var config_path := str(ProjectSettings.get_setting(CONFIG_SETTING, DEFAULT_CONFIG))
+	if not ResourceLoader.exists(config_path):
 		return
-	var config := load(path) as GDScript
+	var config := load(config_path) as GDScript
 	if config == null:
 		return
 	var constants := config.get_script_constant_map()
@@ -190,14 +192,6 @@ func help() -> Array:
 	return out
 
 
-## The same legend as one line of text.
-func help_line() -> String:
-	var parts: PackedStringArray = []
-	for entry: Array in help():
-		parts.append(Loc.t("%s : %s") % [entry[0], " ".join(entry[1])])
-	return "     ".join(parts)
-
-
 ## Key names by action, to fill {jump}-style marks in a text.
 func key_names() -> Dictionary:
 	var names := {}
@@ -272,18 +266,18 @@ func window_mode_for(
 	return DisplayServer.WINDOW_MODE_WINDOWED
 
 
-func load_from(path: String) -> bool:
-	if not FileAccess.file_exists(path):
+func load_from(file_path: String) -> bool:
+	if not FileAccess.file_exists(file_path):
 		return false
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(file_path))
 	if not data is Dictionary:
 		return false
 	settings = Settings.from_dict(data)
 	return true
 
 
-func save_to(path: String) -> void:
-	var file := FileAccess.open(path, FileAccess.WRITE)
+func save_to(file_path: String) -> void:
+	var file := FileAccess.open(file_path, FileAccess.WRITE)
 	if file != null:
 		file.store_string(JSON.stringify(settings.to_dict(), "\t"))
 

@@ -16,7 +16,7 @@ func _ready() -> void:
 	menu.open()
 	await _shot("options")
 	title.free()
-	var demo: Node = (load("res://scenes/main_2d.tscn") as PackedScene).instantiate()
+	var demo: Node = (load(Title.START_SCENE) as PackedScene).instantiate()
 	add_child(demo)
 	await _shot("demo")
 	KitSim.tap(KitSim.key(KEY_ESCAPE))

@@ -23,7 +23,7 @@ Le kit donne le **comportement** des menus, pas leur **apparence** : un jeu gard
    - `internationalization/locale/translations` : `res://addons/kit/locale/en.po` puis le fichier du jeu ; `locale/fallback="fr"` (sinon un joueur français lit l'anglais) ;
    - `gui/theme/custom_font` : la police de lecture du skin ;
    - les actions `pause` et `interact`, et `kit/config` si la config n'est pas `res://kit_config.gd`.
-2. `kit_config.gd`, à la racine : `ACTIONS` (les actions que le joueur peut changer, avec leur nom dans le menu), `FIXED_ACTIONS`, `HELP` (la légende des écrans titre et pause), et au besoin `static func skin()`, `static func self_test()` (des contrôles de plus pour l'auto-test du kit) ou `SELF_TEST` (le chemin d'un auto-test propre au jeu, lancé à la place de celui du kit).
+2. `kit_config.gd`, à la racine : `ACTIONS` (les actions que le joueur peut changer, avec leur nom dans le menu), `FIXED_ACTIONS`, `HELP` (la légende des écrans titre et pause), et au besoin `static func skin()`, `static func self_test()` (des contrôles de plus pour l'auto-test du kit ; elle peut attendre des images avec `await`, le temps de construire un niveau) ou `SELF_TEST` (le chemin d'un auto-test propre au jeu, lancé à la place de celui du kit).
 3. Les exports incluent `addons/kit/fonts/*.txt` (les licences ne sont pas des ressources) et excluent `addons/kit/tests/*` et `addons/kit/dev/mouse_check.*`.
 4. `mise run test` lance les tests du jeu et ceux du kit.
 
@@ -38,7 +38,7 @@ static func skin() -> void:
 	UiStyle.RADIUS = 0
 ```
 
-`Prefs` l'appelle au démarrage, avant tout écran. `tests/test_skin.gd` vérifie ensuite le résultat contre les règles d'une interface lisible : deux polices avec leur licence, des tailles en ordre et au-dessus d'un plancher (20 px à 100 %, soit 30 px en 1080p), le texte lisible sur son panneau (contraste 4,5:1 sur fond blanc comme noir), une sélection qui se voit autrement que par la couleur. Un skin qui casse une règle fait échouer `mise run check`.
+`Prefs` l'appelle au démarrage, avant tout écran. `tests/test_skin.gd` vérifie ensuite le résultat contre les règles d'une interface lisible : deux polices avec leur licence, des tailles en ordre et au-dessus d'un plancher (19 px à 100 %, soit 28 px en 1080p), le texte lisible sur son panneau (contraste 4,5:1 sur fond blanc comme noir), une sélection qui se voit autrement que par la couleur. Un skin qui casse une règle fait échouer `mise run check`.
 
 Pour une interface d'une autre forme (menu circulaire, interface dans le décor, inventaire en grille), le jeu écrit ses propres écrans : il garde `Prefs`, `MenuInput`, `Loc` et `KitSim`, et n'est pas obligé d'utiliser `UiDraw`.
 

@@ -68,10 +68,17 @@ static func tap(event: InputEvent) -> void:
 	send(up)
 
 
-## Lets go of every key, button and stick a test may have left down.
+## Lets go of the keys, buttons and sticks the menus answer to, in case a
+## test left one down.
 static func release_all() -> void:
-	for code: Key in [KEY_SPACE, KEY_ENTER, KEY_ESCAPE, KEY_E, KEY_UP, KEY_DOWN]:
+	for code: Key in [
+		KEY_SPACE, KEY_ENTER, KEY_ESCAPE, KEY_E, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+	]:
 		send(key(code, false))
+	for button: JoyButton in [
+		JOY_BUTTON_A, JOY_BUTTON_B, JOY_BUTTON_START, JOY_BUTTON_DPAD_UP, JOY_BUTTON_DPAD_DOWN
+	]:
+		send(pad(button, false))
 	for axis: JoyAxis in [JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y]:
 		send(stick(axis, 0.0))
 

@@ -28,3 +28,9 @@ msgstr "Move"
 
 msgid "Pause"
 msgstr "Pause"
+
+msgid "Commencer"
+msgstr "Start"
+
+msgid "Quitter"
+msgstr "Quit"

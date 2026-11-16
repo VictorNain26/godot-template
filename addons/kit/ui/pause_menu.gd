@@ -129,6 +129,7 @@ func _point(i: int) -> void:
 	if _resuming or options.visible or i == _index:
 		return
 	_index = i
+	moved.emit()
 	_refresh()
 
 

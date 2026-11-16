@@ -4,7 +4,8 @@ extends Node
 ## needs: the translations, the fonts and their licences, and every scene of
 ## res://scenes loading and staying on stage. A game adds its own checks with
 ## a `static func self_test() -> Array[String]` in its kit config, returning
-## what failed. Prints SELFTEST OK or SELFTEST FAILED and sets the exit code.
+## what failed; it may await frames (building each level takes a few). Prints
+## SELFTEST OK or SELFTEST FAILED and sets the exit code.
 ## Part of the kit (addons/kit).
 
 const FRAMES := 40
@@ -30,7 +31,7 @@ func _ready() -> void:
 	var path := str(ProjectSettings.get_setting(Prefs.CONFIG_SETTING, Prefs.DEFAULT_CONFIG))
 	var config := load(path) as GDScript if ResourceLoader.exists(path) else null
 	if config != null and config.has_method(&"self_test"):
-		var more: Variant = config.call(&"self_test")
+		var more: Variant = await config.call(&"self_test")
 		if more is Array:
 			for failure: Variant in more as Array:
 				failures.append(str(failure))

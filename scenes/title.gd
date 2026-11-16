@@ -21,6 +21,9 @@ var _leaving := false
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# The menu is drawn, not made of Controls: the screen reads the pointer in
+	# _unhandled_input, which a Control that stops the mouse never lets through.
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = UiStyle.theme()
 	# A browser tab is closed, not quit.
 	if OS.has_feature("web"):

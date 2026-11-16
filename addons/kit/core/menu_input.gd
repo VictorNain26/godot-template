@@ -7,7 +7,10 @@ extends RefCounted
 
 const UP: Array[StringName] = [&"ui_up", &"move_up"]
 const DOWN: Array[StringName] = [&"ui_down", &"move_down"]
+const LEFT: Array[StringName] = [&"ui_left", &"move_left"]
+const RIGHT: Array[StringName] = [&"ui_right", &"move_right"]
 const ACCEPT: Array[StringName] = [&"ui_accept", &"interact"]
+const BACK: Array[StringName] = [&"ui_cancel", &"pause"]
 ## A stick counts as tilted past PRESS and as back at rest under REST.
 const PRESS := 0.5
 const REST := 0.3
