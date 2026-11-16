@@ -64,8 +64,11 @@ func test_weights_figures_and_line_height_come_from_the_fonts() -> void:
 
 func test_both_faces_hold_every_character_the_game_writes() -> void:
 	var texts: Array = []
-	for locale: String in TranslationServer.get_loaded_locales():
-		var translation := TranslationServer.get_translation_object(locale)
+	var files: PackedStringArray = ProjectSettings.get_setting(
+		"internationalization/locale/translations", PackedStringArray()
+	)
+	for path in files:
+		var translation := load(path) as Translation
 		for message in translation.get_message_list():
 			texts.append(str(message))
 			texts.append(str(translation.get_message(message)))

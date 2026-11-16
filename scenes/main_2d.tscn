@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/player_2d.gd" id="1_41ekw"]
+[ext_resource type="Script" path="res://scenes/game_pause.gd" id="2_jmhsh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jmhsh"]
 size = Vector2(32, 32)
@@ -17,3 +18,6 @@ polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
 [node name="Collision" type="CollisionShape2D" parent="Player" unique_id=1136936909]
 shape = SubResource("RectangleShape2D_jmhsh")
+
+[node name="Pause" type="CanvasLayer" parent="." unique_id=1707278877]
+script = ExtResource("2_jmhsh")

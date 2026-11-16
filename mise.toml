@@ -34,13 +34,13 @@ run = [
 ]
 
 [tasks.smoke]
-description = "Run every scenes/main_*.tscn through tools/smoke.sh"
+description = "Run every scene of scenes/ through tools/smoke.sh"
 depends = ["import"]
 # check runs test and smoke together: keep one Godot at a time on the project.
 wait_for = ["validate", "test"]
 run = """
 status=0
-for scene in scenes/main_*.tscn; do
+for scene in scenes/*.tscn; do
   tools/smoke.sh "$scene" godot --path . "res://$scene" || status=1
 done
 exit $status
@@ -51,7 +51,7 @@ description = "Download, SHA512-check and install the official export templates 
 run = """
 version=$(tools/godot_version.sh)
 dir="${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates/$version"
-[ -f "$dir/linux_release.x86_64" ] && [ -f "$dir/windows_release_x86_64.exe" ] && exit 0
+[ -f "$dir/linux_release.x86_64" ] && [ -f "$dir/windows_release_x86_64.exe" ] && [ -f "$dir/web_nothreads_release.zip" ] && exit 0
 tpz="Godot_v${version%.stable}-stable_export_templates.tpz"
 base="https://github.com/godotengine/godot/releases/download/${version%.stable}-stable"
 work=$(mktemp -d)
@@ -61,7 +61,8 @@ curl -fsSL -o SHA512-SUMS.txt "$base/SHA512-SUMS.txt"
 curl -fsSL -o "$tpz" "$base/$tpz"
 grep " $tpz\\$" SHA512-SUMS.txt | sha512sum -c --strict -
 mkdir -p "$dir"
-unzip -q -j -o "$tpz" templates/version.txt templates/linux_release.x86_64 templates/windows_release_x86_64.exe -d "$dir"
+unzip -q -j -o "$tpz" templates/version.txt templates/linux_release.x86_64 \
+  templates/windows_release_x86_64.exe templates/web_nothreads_release.zip -d "$dir"
 """
 
 [tasks.editor]
@@ -92,14 +93,59 @@ echo "Godot $release for Windows opened on $project"
 """
 
 [tasks.export]
-description = "Export the Linux and Windows release builds to build/"
+description = "Export the Linux, Windows and web release builds to build/"
 depends = ["import", "export-templates"]
 run = """
-mkdir -p build/linux build/windows
+rm -rf build
+mkdir -p build/linux build/windows build/web
+# Keeps Godot from importing what it has just exported.
+touch build/.gdignore
 godot --headless --path . --export-release "Linux" build/linux/game.x86_64
 godot --headless --path . --export-release "Windows Desktop" build/windows/game.exe
+godot --headless --path . --export-release "Web" build/web/index.html
 """
 
 [tasks.export-smoke]
-description = "Run the exported Linux build through tools/smoke.sh"
-run = "tools/smoke.sh build/linux/game.x86_64 build/linux/game.x86_64"
+description = "Run the exported Linux build's self-test: translations, fonts, every scene (SELFTEST OK)"
+run = """
+out=$(timeout 300 build/linux/game.x86_64 --headless -- --selftest 2>&1)
+printf '%s\n' "$out" | grep -E "SELFTEST|ERROR" | head -20
+printf '%s\n' "$out" | grep -q "SELFTEST OK"
+"""
+
+[tasks.web-smoke]
+description = "Load the web build in a headless Chromium (pip install playwright) and save build/web_smoke.png"
+run = "python3 tools/web_smoke.py"
+
+[tasks.mouse-check]
+description = "Click through the kit's menus with real mouse events under Xvfb (MOUSE CHECK OK)"
+depends = ["import"]
+run = """
+out=$(timeout 600 xvfb-run -a godot --path . --rendering-driver opengl3 res://addons/kit/dev/mouse_check.tscn 2>&1)
+printf '%s\n' "$out" | grep -E "MOUSE CHECK|SCRIPT ERROR"
+printf '%s\n' "$out" | grep -q "MOUSE CHECK OK"
+"""
+
+[tasks.shots]
+description = "Save pictures of the title, the options, a demo and its pause to build/shots (OUT=dir), under Xvfb"
+depends = ["import"]
+run = "timeout 300 xvfb-run -a godot --path . --rendering-driver opengl3 res://tools/shots/shots.tscn 2>&1 | grep -E 'SHOT|SCRIPT ERROR'"
+
+[tasks.kit-update]
+description = "Pull the latest kit from godot-template's main into addons/kit with git subtree (addons/kit/README.md)"
+run = """
+set -e
+url=${KIT_TEMPLATE_URL:-https://github.com/VictorNain26/godot-template.git}
+git diff --quiet && git diff --cached --quiet || { echo "commit or stash your changes first" >&2; exit 1; }
+git remote get-url template >/dev/null 2>&1 || git remote add template "$url"
+git fetch template main
+split=$(git subtree split --prefix=addons/kit template/main)
+if git log --grep="git-subtree-dir: addons/kit" --format=%H -1 | grep -q .; then
+  git subtree merge --prefix=addons/kit "$split" --squash -m "chore: kit from godot-template"
+else
+  # A game made from the template holds the kit as plain files: hand it to subtree once.
+  git rm -rq addons/kit
+  git commit -qm "chore: addons/kit is now pulled from godot-template"
+  git subtree add --prefix=addons/kit "$split" --squash -m "chore: kit from godot-template"
+fi
+"""

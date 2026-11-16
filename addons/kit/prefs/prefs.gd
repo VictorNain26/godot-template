@@ -82,6 +82,9 @@ func _ready() -> void:
 	if persist and not load_from(path):
 		settings.locale = Settings.pick_locale(OS.get_locale_language())
 	apply()
+	# An exported build checks itself with `-- --selftest` (mise run export-smoke).
+	if OS.get_cmdline_user_args().has("--selftest"):
+		add_child((load("res://addons/kit/dev/self_test.gd") as GDScript).new())
 
 
 ## Reads the game's kit config and applies its skin. A game without one gets
