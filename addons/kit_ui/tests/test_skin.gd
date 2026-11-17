@@ -3,7 +3,7 @@ extends GdUnitTestSuite
 ## The rules any look of the menus keeps, whatever the game's skin sets in
 ## UiStyle: two faces with their licences, sizes in order and above a floor,
 ## text readable on its panel, a selection told by more than its colour.
-## Part of the kit (addons/kit): a game that restyles its menus runs these
+## Part of the kit's menus (addons/kit_ui): a game that restyles its menus runs these
 ## against its own skin.
 
 ## A size on a 1280 by 720 screen that is 28 pixels on a 1080p one: the floor

@@ -3,7 +3,7 @@ extends RefCounted
 
 ## What every screen draws the same way: a line of text, a menu row, a key
 ## cap, a legend of keys, a slider, the name of the game. The values come
-## from UiStyle. Part of the kit (addons/kit).
+## from UiStyle. Part of the kit's menus (addons/kit_ui).
 
 const LEFT := HORIZONTAL_ALIGNMENT_LEFT
 const CENTER := HORIZONTAL_ALIGNMENT_CENTER

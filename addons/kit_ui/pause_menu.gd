@@ -1,7 +1,7 @@
 class_name PauseMenu
 extends CanvasLayer
 
-## Pause overlay. Runs while the tree is paused. Part of the kit (addons/kit).
+## Pause overlay. Runs while the tree is paused. Part of the kit's menus (addons/kit_ui).
 ##
 ## `entries` are [id, label] pairs: "resume" resumes, "options" opens the
 ## options page, and any other id is handed to the game through `chosen`:
