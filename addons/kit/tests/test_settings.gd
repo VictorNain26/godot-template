@@ -1,9 +1,9 @@
 extends GdUnitTestSuite
 
-## The options: what they hold, what they do to the engine, and the menu that
-## changes them. Tests never read or write the player's own settings file.
-## Part of the kit (addons/kit): it uses the actions the game's kit config
-## offers for rebinding, whatever they are.
+## The options: what they hold and what they do to the engine. The menu that
+## changes them is tested with it, in addons/kit_ui. Tests never read or write
+## the player's own settings file. Part of the kit (addons/kit): it uses the
+## actions the game's kit config offers for rebinding, whatever they are.
 
 const SCRATCH := "user://test_kit_settings.json"
 
@@ -194,38 +194,3 @@ func test_text_size_scales_what_is_drawn() -> void:
 	assert_int(Prefs.px(24)).is_equal(24)
 	Prefs.settings.text_scale = 1.5
 	assert_int(Prefs.px(24)).is_equal(36)
-
-
-func test_the_menu_changes_options_and_takes_a_new_key() -> void:
-	var menu: OptionsMenu = auto_free(OptionsMenu.new())
-	add_child(menu)
-	var closed := [false]
-	menu.closed.connect(func() -> void: closed[0] = true)
-	menu.open()
-	assert_array(menu.rows()).is_equal(OptionsMenu.MAIN)
-	menu.change(-1)
-	assert_int(Prefs.settings.master).is_equal(Settings.new().master - 1)
-	menu.index = OptionsMenu.MAIN.find(&"text")
-	menu.change(1)
-	assert_float(Prefs.settings.text_scale).is_equal(1.25)
-	assert_str(menu.row_text(&"text")).contains("125")
-	menu.index = OptionsMenu.MAIN.find(&"shake")
-	menu.accept()
-	assert_bool(Prefs.settings.shake).is_false()
-	menu.index = OptionsMenu.MAIN.find(&"keys")
-	menu.accept()
-	assert_bool(menu.on_keys).is_true()
-	assert_int(menu.rows().size()).is_equal(Prefs.actions.size() + 2)
-	var action := _action()
-	var fresh := _free_key()
-	menu.index = menu.rows().find(action)
-	menu.accept()
-	assert_bool(menu.listening).is_true()
-	menu.take_key(fresh)
-	assert_bool(menu.listening).is_false()
-	assert_bool(InputMap.event_is_action(_key(fresh), action)).is_true()
-	menu.back()
-	assert_bool(menu.on_keys).is_false()
-	menu.back()
-	assert_bool(closed[0]).is_true()
-	assert_bool(menu.visible).is_false()

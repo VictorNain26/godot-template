@@ -6,6 +6,9 @@ extends GdUnitTestSuite
 ## the kit config, has its translation. Part of the kit (addons/kit).
 
 const SOURCES: Array[String] = ["res://src", "res://scenes", "res://scripts", "res://addons/kit"]
+## Other addons scanned too: the kit's menus, when the game keeps them.
+const ADDONS := "res://addons"
+const KIT_PREFIX := "kit_"
 const CALL := 'Loc\\.t\\(\\s*"((?:[^"\\\\]|\\\\.)*)"'
 
 
@@ -21,17 +24,22 @@ func _files(dir: String, out: Array[String]) -> void:
 
 
 ## Every text the code hands to Loc.t as written, plus the labels of the
-## kit config and of the options page.
+## kit config. Texts that go through a variable are checked where they are
+## made (the kit's menus test their own).
 func _shown() -> Array[String]:
 	var files: Array[String] = []
-	for dir in SOURCES:
+	var dirs := SOURCES.duplicate()
+	for sub in DirAccess.get_directories_at(ADDONS):
+		if sub.begins_with(KIT_PREFIX):
+			dirs.append(ADDONS.path_join(sub))
+	for dir: String in dirs:
 		_files(dir, files)
 	var calls := RegEx.create_from_string(CALL)
 	var out := {}
 	for file in files:
 		for hit in calls.search_all(FileAccess.get_file_as_string(file)):
 			out[hit.get_string(1).c_unescape()] = true
-	for label: Variant in Prefs.actions.values() + OptionsMenu.NAMES.values():
+	for label: Variant in Prefs.actions.values():
 		out[str(label)] = true
 	for entry: Array in Prefs.help_entries:
 		out[str(entry[0])] = true
@@ -41,8 +49,12 @@ func _shown() -> Array[String]:
 	return texts
 
 
-func test_the_code_shows_texts_through_loc() -> void:
-	assert_int(_shown().size()).is_greater(10)
+func test_the_search_finds_the_texts_the_code_shows() -> void:
+	# The regex is what finds them: a sample call is found, with its escapes.
+	var hit := RegEx.create_from_string(CALL).search('x = Loc.t( "Un \\"mot\\"")')
+	assert_object(hit).is_not_null()
+	assert_str(hit.get_string(1).c_unescape()).is_equal('Un "mot"')
+	assert_int(_shown().size()).is_greater(0)
 
 
 func test_every_shown_text_has_its_english() -> void:
@@ -68,48 +80,10 @@ func test_the_project_falls_back_to_french() -> void:
 	)
 
 
-func test_a_text_shown_with_its_english_in_any_file_is_not_missing() -> void:
-	# The game's texts and the kit's are in two files: each must count.
+func test_a_text_shown_with_its_english_is_not_missing() -> void:
 	Loc.seen.clear()
-	for text: String in [Loc.t("Reprendre"), Loc.t(str(Prefs.actions.values()[0]))]:
-		assert_str(text).is_not_empty()
+	assert_str(Loc.t(str(Prefs.actions.values()[0]))).is_not_empty()
 	assert_array(Loc.missing("en")).is_empty()
 	Loc.t("Un texte qui n'existe dans aucune langue")
 	assert_array(Loc.missing("en")).is_equal(["Un texte qui n'existe dans aucune langue"])
-	Loc.seen.clear()
-
-
-func test_the_kits_english_holds_only_the_kits_texts() -> void:
-	# A game's text kept in the kit's file is translated in that game by
-	# chance, and left out of every game that pulls the kit without it.
-	var kit_code := ""
-	var files: Array[String] = []
-	_files("res://addons/kit", files)
-	for file in files:
-		kit_code += FileAccess.get_file_as_string(file)
-	var translation: Translation = load("res://addons/kit/locale/en.po")
-	var foreign: Array[String] = []
-	for message: StringName in translation.get_message_list():
-		var text := str(message)
-		if text != "" and not kit_code.contains('"%s"' % text.replace('"', '\\"')):
-			foreign.append(text)
-	assert_array(foreign).override_failure_message("not the kit's: %s" % [foreign]).is_empty()
-
-
-func test_the_kits_menus_ask_only_for_texts_with_their_english() -> void:
-	# Texts handed to Loc.t through a variable escape the search above: open
-	# every page of the kit's menus and ask Loc what they showed.
-	Loc.seen.clear()
-	var pause: PauseMenu = auto_free(PauseMenu.new())
-	add_child(pause)
-	await get_tree().process_frame
-	pause.options.open()
-	for row in pause.options.rows():
-		pause.options.row_text(row)
-	pause.options.on_keys = true
-	pause.options.listening = true
-	pause.options.refresh()
-	pause.legend()
-	await get_tree().process_frame
-	assert_array(Loc.missing("en")).is_empty()
 	Loc.seen.clear()

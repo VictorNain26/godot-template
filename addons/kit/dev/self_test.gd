@@ -1,11 +1,13 @@
 extends Node
 ## Started by `-- --selftest` (the Prefs autoload adds it). An exported build
 ## has no tests in it, so this is how a build proves it holds what the game
-## needs: the translations, the fonts and their licences, and every scene of
-## res://scenes loading and staying on stage. A game adds its own checks with
-## a `static func self_test() -> Array[String]` in its kit config, returning
-## what failed; it may await frames (building each level takes a few). Prints
-## SELFTEST OK or SELFTEST FAILED and sets the exit code.
+## needs: the translations, the default font, the licences the kit config
+## lists (LICENCES), and every scene of res://scenes loading and staying on
+## stage. A game adds its own checks with a `static func self_test() ->
+## Array[String]` in its kit config, returning what failed; it may await
+## frames (building each level takes a few). The kit's menus add theirs there
+## (KitUiSelfTest). Prints SELFTEST OK or SELFTEST FAILED and sets the exit
+## code.
 ## Part of the kit (addons/kit).
 
 const FRAMES := 40
@@ -16,11 +18,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var failures: Array[String] = []
 	await get_tree().process_frame
-	if TranslationServer.get_loaded_locales().has("en"):
-		TranslationServer.set_locale("en")
-		if Loc.t("Reprendre") != "Resume":
-			failures.append("the English translation is not in the build")
-		TranslationServer.set_locale(Prefs.settings.locale)
+	failures += english()
 	failures += fonts()
 	for scene in scenes():
 		get_tree().change_scene_to_file(scene)
@@ -28,8 +26,7 @@ func _ready() -> void:
 			await get_tree().process_frame
 		if not on_stage(get_tree().current_scene, scene):
 			failures.append("%s did not load" % scene)
-	var path := str(ProjectSettings.get_setting(Prefs.CONFIG_SETTING, Prefs.DEFAULT_CONFIG))
-	var config := load(path) as GDScript if ResourceLoader.exists(path) else null
+	var config := KitConfig.find()
 	if config != null and config.has_method(&"self_test"):
 		var more: Variant = await config.call(&"self_test")
 		if more is Array:
@@ -43,18 +40,57 @@ func _ready() -> void:
 	get_tree().quit(0 if failures.is_empty() else 1)
 
 
-## The two typefaces and their licences are in the build, and a text that
-## names no font gets the reading face, not the engine's own.
+## The English the project declares answers through the engine: a text whose
+## English differs from it comes back translated. A project with no English
+## file has nothing to check.
+static func english() -> Array[String]:
+	var messages := Loc.messages("en")
+	var source := ""
+	for text: String in messages:
+		if text != "" and str(messages[text]) != text:
+			source = text
+			break
+	if source == "":
+		var declared: PackedStringArray = ProjectSettings.get_setting(
+			"internationalization/locale/translations", PackedStringArray()
+		)
+		return [] if declared.is_empty() else ["the English translation is not in the build"]
+	var before := TranslationServer.get_locale()
+	TranslationServer.set_locale("en")
+	var shown := Loc.t(source)
+	TranslationServer.set_locale(before)
+	if shown != str(messages[source]):
+		return ["the English translation does not answer: %s" % source]
+	return []
+
+
+## The default font the project names is in the build and is the one a text
+## with no font gets, not the engine's own; the licences the kit config lists
+## (LICENCES) are in the build too: they are not resources, an export leaves
+## them out unless include_filter names them.
 static func fonts() -> Array[String]:
 	var out: Array[String] = []
-	for path: String in [UiStyle.DISPLAY_PATH, UiStyle.BODY_PATH]:
-		if not ResourceLoader.exists(path) or not load(path) is FontFile:
+	var path := str(ProjectSettings.get_setting("gui/theme/custom_font", ""))
+	if path != "":
+		var font := load(path) as Font if ResourceLoader.exists(path) else null
+		if font == null:
 			out.append("%s is not in the build" % path)
-	for path: String in UiStyle.LICENCES:
-		if not FileAccess.file_exists(path):
-			out.append("%s is not in the build" % path)
-	if ThemeDB.fallback_font.get_font_name() != UiStyle.body().get_font_name():
-		out.append("the default font is not the reading face")
+		elif ThemeDB.fallback_font.get_font_name() != font.get_font_name():
+			out.append("the default font is not %s" % path)
+	for licence in licences():
+		if not FileAccess.file_exists(licence):
+			out.append("%s is not in the build" % licence)
+	return out
+
+
+## The files the kit config lists in LICENCES.
+static func licences() -> Array[String]:
+	var out: Array[String] = []
+	var listed: Variant = KitConfig.constant("LICENCES", [])
+	if listed is Array:
+		var paths: Array = listed
+		for path: Variant in paths:
+			out.append(str(path))
 	return out
 
 
