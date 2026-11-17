@@ -97,7 +97,7 @@ static func over(top: Color, alpha: float, under: Color) -> Color:
 
 ## The display face, letter-spaced for `size`.
 static func display(size: int, weight: int = STRONG) -> Font:
-	return _font(DISPLAY_PATH, weight, int(round(size * TRACKING)), 0, false)
+	return _font(DISPLAY_PATH, weight, roundi(size * TRACKING), 0, false)
 
 
 ## The reading face.
@@ -114,7 +114,7 @@ static func figures(weight: int = STRONG) -> Font:
 ## The reading face with LINE_HEIGHT between lines at `size`, for paragraphs.
 static func reading(size: int) -> Font:
 	var plain := body()
-	var extra := int(round(size * LINE_HEIGHT - plain.get_height(size)))
+	var extra := roundi(size * LINE_HEIGHT - plain.get_height(size))
 	return _font(BODY_PATH, REGULAR, 0, maxi(extra, 0), false)
 
 

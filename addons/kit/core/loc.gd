@@ -26,8 +26,8 @@ static func t(text: String) -> String:
 ## with one of those marks. The source texts keep ordinary spaces.
 static func french_spaces(text: String) -> String:
 	var out := text.replace("« ", "«" + NBSP)
-	for mark in HIGH_MARKS:
-		out = out.replace(" " + mark, NBSP + mark)
+	for high in HIGH_MARKS:
+		out = out.replace(" " + high, NBSP + high)
 	return out
 
 

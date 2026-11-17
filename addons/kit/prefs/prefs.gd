@@ -88,7 +88,8 @@ func _ready() -> void:
 	apply()
 	# An exported build checks itself with `-- --selftest` (mise run export-smoke).
 	if OS.get_cmdline_user_args().has("--selftest"):
-		add_child((load(self_test_path) as GDScript).new())
+		var checker: Node = (load(self_test_path) as GDScript).new()
+		add_child(checker)
 
 
 ## Reads the game's kit config and applies its skin. A game without one gets
@@ -102,14 +103,17 @@ func load_config() -> void:
 		return
 	var constants := config.get_script_constant_map()
 	var found: Variant = constants.get("ACTIONS", {})
-	actions = (found as Dictionary).duplicate() if found is Dictionary else {}
+	var given_actions: Dictionary = found if found is Dictionary else {}
+	actions = given_actions.duplicate()
 	fixed_actions.clear()
 	found = constants.get("FIXED_ACTIONS", [])
 	if found is Array:
-		for action: Variant in found as Array:
+		var fixed: Array = found
+		for action: Variant in fixed:
 			fixed_actions.append(StringName(str(action)))
 	found = constants.get("HELP", [])
-	help_entries = (found as Array).duplicate() if found is Array else []
+	var given_help: Array = found if found is Array else []
+	help_entries = given_help.duplicate()
 	found = constants.get("SELF_TEST", "")
 	if found is String and found != "":
 		self_test_path = found
@@ -119,7 +123,7 @@ func load_config() -> void:
 
 
 func px(size: float) -> int:
-	return int(round(size * settings.text_scale))
+	return roundi(size * settings.text_scale)
 
 
 ## Follows the device the player is using. A key or a click returns the
@@ -148,7 +152,8 @@ func key_label(action: StringName, keyboard: bool = false) -> String:
 	var codes: Array = settings.bindings(_defaults).get(action, [])
 	if codes.is_empty():
 		return "?"
-	return key_name(codes[0])
+	var first: Key = codes[0]
+	return key_name(first)
 
 
 ## The gamepad button bound to an action, or "" if it has none.
@@ -188,7 +193,7 @@ func help() -> Array:
 		var names: Array[String] = []
 		for action: StringName in entry[1]:
 			names.append(key_label(action))
-		out.append([Loc.t(entry[0]), names])
+		out.append([Loc.t(str(entry[0])), names])
 	return out
 
 
@@ -228,7 +233,8 @@ func reset_keys() -> void:
 
 func apply() -> void:
 	for which: StringName in BUSES:
-		var bus := AudioServer.get_bus_index(BUSES[which])
+		var bus_name: StringName = BUSES[which]
+		var bus := AudioServer.get_bus_index(bus_name)
 		if bus >= 0:
 			AudioServer.set_bus_volume_db(bus, Settings.volume_db(settings.volume(which)))
 			AudioServer.set_bus_mute(bus, settings.volume(which) == 0)
@@ -272,7 +278,8 @@ func load_from(file_path: String) -> bool:
 	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(file_path))
 	if not data is Dictionary:
 		return false
-	settings = Settings.from_dict(data)
+	var saved: Dictionary = data
+	settings = Settings.from_dict(saved)
 	return true
 
 

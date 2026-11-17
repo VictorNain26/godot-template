@@ -137,9 +137,10 @@ func test_taking_a_key_never_leaves_an_action_without_one() -> void:
 			pool.append(code as Key)
 	pool.append(_free_key())
 	for i in 400:
-		s.rebind(actions[rng.randi() % actions.size()], pool[rng.randi() % pool.size()], defaults)
+		var picked: StringName = actions[rng.randi() % actions.size()]
+		s.rebind(picked, pool[rng.randi() % pool.size()], defaults)
 		var layout := s.bindings(defaults)
-		var owner := {}
+		var holder := {}
 		for action: StringName in layout:
 			(
 				assert_array(layout[action])
@@ -148,13 +149,13 @@ func test_taking_a_key_never_leaves_an_action_without_one() -> void:
 			)
 			for code: int in layout[action]:
 				(
-					assert_bool(owner.has(code))
+					assert_bool(holder.has(code))
 					. override_failure_message(
-						"key %d is on %s and %s" % [code, owner.get(code), action]
+						"key %d is on %s and %s" % [code, holder.get(code), action]
 					)
 					. is_false()
 				)
-				owner[code] = action
+				holder[code] = action
 
 
 func test_a_new_key_works_at_once_and_the_old_one_stops() -> void:

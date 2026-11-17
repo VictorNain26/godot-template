@@ -20,21 +20,21 @@ func _initialize() -> void:
 		if not (file.begins_with("main_") and file.ends_with(".tscn")):
 			continue
 		var path := "res://scenes/" + file
-		var root := (load(path) as PackedScene).instantiate()
-		if root.get_node_or_null("Pause") == null:
+		var scene := (load(path) as PackedScene).instantiate()
+		if scene.get_node_or_null("Pause") == null:
 			var pause := CanvasLayer.new()
 			pause.name = "Pause"
 			pause.set_script(load("res://scenes/game_pause.gd"))
-			root.add_child(pause)
-			pause.owner = root
-			_save(root, path)
-		root.free()
+			scene.add_child(pause)
+			pause.owner = scene
+			_save(scene, path)
+		scene.free()
 	quit(0)
 
 
-func _save(root: Node, path: String) -> void:
+func _save(scene: Node, path: String) -> void:
 	var packed := PackedScene.new()
-	var err := packed.pack(root)
+	var err := packed.pack(scene)
 	if err == OK:
 		err = ResourceSaver.save(packed, path)
 	print("%s: %s" % [path, error_string(err)])

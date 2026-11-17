@@ -1,0 +1,8 @@
+# Keeps the SHA-pinned actions of .github/workflows up to date: one weekly PR
+# per update, which the test workflow checks like any other.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

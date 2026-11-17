@@ -24,10 +24,10 @@ func _ready() -> void:
 	get_tree().quit()
 
 
-func _shot(name: String) -> void:
+func _shot(label: String) -> void:
 	for i in 6:
 		await get_tree().process_frame
 	var out := OS.get_environment("OUT")
-	var path := (out if out != "" else "build/shots") + "/" + name + ".png"
+	var path := (out if out != "" else "build/shots") + "/" + label + ".png"
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
 	print("SHOT ", path, " ", get_viewport().get_texture().get_image().save_png(path))

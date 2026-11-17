@@ -65,8 +65,8 @@ func test_committed_mcp_json_matches_bundled_addon() -> void:
 	var text := FileAccess.get_file_as_string(MCP_JSON)
 	var found := McpPin.problems(
 		text,
-		cfg.get_value("plugin", "version", ""),
-		cfg.get_value("plugin", "dependency_cutoff", "")
+		str(cfg.get_value("plugin", "version", "")),
+		str(cfg.get_value("plugin", "dependency_cutoff", ""))
 	)
 	(
 		assert_array(found)
