@@ -11,6 +11,7 @@ const ROOTS: Array[String] = [
 	"res://tests",
 	"res://tools",
 	"res://addons/kit",
+	"res://addons/kit_ui",
 	"res://kit_config.gd"
 ]
 const EXTENSIONS: Array[String] = ["gd", "tscn", "gdshader"]
@@ -45,7 +46,9 @@ func _files(dir_path: String) -> Array[String]:
 	if dir_path.get_extension() in EXTENSIONS:
 		return [dir_path]
 	var dir := DirAccess.open(dir_path)
-	if dir == null:
+	# A folder with a .gdignore is not part of the project (Godot skips it):
+	# tools/kit_core_fixture is a separate game, checked by kit_core_check.sh.
+	if dir == null or dir.file_exists(".gdignore"):
 		return out
 	for sub in dir.get_directories():
 		out.append_array(_files(dir_path.path_join(sub)))

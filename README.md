@@ -1,6 +1,6 @@
 # godot-template
 
-Le point de départ des jeux Godot 4.7 : outils épinglés par [mise](https://mise.jdx.dev), tests GdUnit4, CI, export Linux, Windows et web avec auto-test, publication sur GitHub Releases et Pages, configuration Claude Code, et le **kit** (`addons/kit/`) que partagent tous les jeux : options, traduction, entrées clavier, manette et souris, menus en liste, style d'interface remplaçable.
+Le point de départ des jeux Godot 4.7 : outils épinglés par [mise](https://mise.jdx.dev), tests GdUnit4, CI, export Linux, Windows et web avec auto-test, publication sur GitHub Releases et Pages, configuration Claude Code, et le **kit** (`addons/kit/`) que partagent tous les jeux : options, traduction, entrées clavier, manette et souris. Des menus prêts à l'emploi (`addons/kit_ui/`) s'y ajoutent, qu'un jeu garde, habille ou remplace par les siens.
 
 Le template ne choisit ni le genre, ni la 2D ou la 3D, ni l'apparence : il démarre sur un écran titre, des options, un menu pause et deux démos (2D et 3D) à remplacer.
 
@@ -27,7 +27,7 @@ Le template ne choisit ni le genre, ni la 2D ou la 3D, ni l'apparence : il déma
 | Commun (template et kit) | Propre au jeu |
 | --- | --- |
 | Outils, CI, publication, tests | Le gameplay, le monde, les créatures |
-| Options, traduction, entrées, menus en liste | La direction artistique |
-| Règles d'une interface lisible | L'apparence des menus (le skin, dans `kit_config.gd`) |
+| Options, traduction, entrées | La direction artistique |
+| Vrais clics et auto-test de l'exécutable, sur les menus du jeu | Les menus : ceux du kit avec un skin, ou les siens |
 
-Le détail du kit, de son skin et de sa mise à jour dans les jeux est dans `addons/kit/README.md`.
+Le détail du kit et de sa mise à jour dans les jeux est dans `addons/kit/README.md` ; ses menus, leur skin et la façon de les remplacer, dans `addons/kit_ui/README.md`.

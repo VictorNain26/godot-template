@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://kug4dkikby3t"
-path="res://.godot/imported/Cinzel.ttf-a8c3972435f2f1099b0123eabb485544.fontdata"
+uid="uid://cl2rake0mmfsv"
+path="res://.godot/imported/AtkinsonHyperlegibleNext.ttf-4d1ad2eb3e0ce075f2598d30fa2d4362.fontdata"
 
 [deps]
 
-source_file="res://addons/kit/fonts/Cinzel.ttf"
-dest_files=["res://.godot/imported/Cinzel.ttf-a8c3972435f2f1099b0123eabb485544.fontdata"]
+source_file="res://addons/kit_ui/fonts/AtkinsonHyperlegibleNext.ttf"
+dest_files=["res://.godot/imported/AtkinsonHyperlegibleNext.ttf-4d1ad2eb3e0ce075f2598d30fa2d4362.fontdata"]
 
 [params]
 

@@ -9,15 +9,17 @@ extends Node
 ##   FIXED_ACTIONS  actions not offered for rebinding (pause), kept off taken keys
 ##   HELP           the legend of the title and pause screens: [label, [actions]]
 ##   SELF_TEST      optional: the script `-- --selftest` starts, in place of the kit's
-##   static func skin()       optional: sets UiStyle's tokens to give the menus a look
+##   LICENCES       the licence files of the fonts, checked in an exported build
+##   static func skin()       optional: the game's look, set before any screen
+##                            (the kit's menus read it from UiStyle)
+##   static func mouse_check(check)  the clicks `mise run mouse-check` makes on
+##                            the game's menus (addons/kit/dev/mouse_check.gd)
 ##   static func self_test()  optional: the game's own checks for the kit's
 ##                            self-test, returning what failed; it may await frames
 
 signal changed
 
 const PATH := "user://settings.json"
-const CONFIG_SETTING := "kit/config"
-const DEFAULT_CONFIG := "res://kit_config.gd"
 const BUSES := {&"master": &"Master", &"music": &"Music", &"sfx": &"Sfx"}
 const CANCEL_KEY := KEY_ESCAPE
 ## The engine names keys in English; these are the ones a French player meets.
@@ -93,12 +95,9 @@ func _ready() -> void:
 
 
 ## Reads the game's kit config and applies its skin. A game without one gets
-## no rebindable action and the kit's own look.
+## no rebindable action and its interface's own look.
 func load_config() -> void:
-	var config_path := str(ProjectSettings.get_setting(CONFIG_SETTING, DEFAULT_CONFIG))
-	if not ResourceLoader.exists(config_path):
-		return
-	var config := load(config_path) as GDScript
+	var config := KitConfig.find()
 	if config == null:
 		return
 	var constants := config.get_script_constant_map()
@@ -119,7 +118,6 @@ func load_config() -> void:
 		self_test_path = found
 	if config.has_method(&"skin"):
 		config.call(&"skin")
-		UiStyle.reset()
 
 
 func px(size: float) -> int:

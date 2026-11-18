@@ -3,7 +3,7 @@ extends Control
 
 ## A line of key caps with what each key does, as a node a container can
 ## place. `entries` are [label, [keys]] pairs; see UiDraw.legend.
-## Part of the kit (addons/kit), shared by every game built on the template.
+## Part of the kit's menus (addons/kit_ui), shared by every game built on the template.
 
 var entries: Array = []
 ## Widest the legend may be before it wraps to a second line.

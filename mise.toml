@@ -21,7 +21,7 @@ depends = ["import"]
 run = "godot --headless --path . -s res://tools/validate.gd"
 
 [tasks.test]
-description = "Run GdUnit4 headless on tests/ and addons/kit/tests/ (tools/gdunit.sh res://tests/test_x.gd for one file)"
+description = "Run GdUnit4 headless on tests/, addons/kit/tests/ and addons/kit_ui/tests/ (tools/gdunit.sh res://tests/test_x.gd for one file)"
 depends = ["import"]
 wait_for = ["validate"]
 run = "tools/gdunit.sh"
@@ -29,8 +29,8 @@ run = "tools/gdunit.sh"
 [tasks.lint]
 description = "Check GDScript formatting and lint rules: the project and the kit, not the vendored addons"
 run = [
-  "gdformat --check src scenes tests tools addons/kit kit_config.gd",
-  "gdlint src scenes tests tools addons/kit kit_config.gd",
+  "gdformat --check src scenes tests tools $(ls -d addons/kit addons/kit_* 2>/dev/null) kit_config.gd",
+  "gdlint src scenes tests tools $(ls -d addons/kit addons/kit_* 2>/dev/null) kit_config.gd",
 ]
 
 [tasks.smoke]
@@ -117,8 +117,12 @@ printf '%s\n' "$out" | grep -q "SELFTEST OK"
 description = "Load the web build in a headless Chromium (pip install playwright) and save build/web_smoke.png"
 run = "python3 tools/web_smoke.py"
 
+[tasks.kit-core-check]
+description = "Prove the kit works for a game without the kit's menus: a scratch game from tools/kit_core_fixture, its tests, self-test and clicks (KIT CORE CHECK OK)"
+run = "tools/kit_core_check.sh"
+
 [tasks.mouse-check]
-description = "Click through the kit's menus with real mouse events under Xvfb (MOUSE CHECK OK)"
+description = "Click through the game menus (kit config mouse_check) with real mouse events under Xvfb (MOUSE CHECK OK)"
 depends = ["import"]
 run = """
 out=$(timeout 600 xvfb-run -a -s "-screen 0 1280x720x24" godot --path . --rendering-driver opengl3 res://addons/kit/dev/mouse_check.tscn 2>&1) || true
@@ -137,7 +141,7 @@ depends = ["import"]
 run = "timeout 300 xvfb-run -a godot --path . --rendering-driver opengl3 res://tools/shots/shots.tscn 2>&1 | grep -E 'SHOT|SCRIPT ERROR'"
 
 [tasks.kit-update]
-description = "Pull the latest kit from godot-template's main into addons/kit with git subtree (addons/kit/README.md)"
+description = "Pull the latest kit (addons/kit) and, if the game keeps them, its menus (addons/kit_ui) from godot-template's main with git subtree"
 run = """
 set -e
 url=${KIT_TEMPLATE_URL:-https://github.com/VictorNain26/godot-template.git}
@@ -148,19 +152,37 @@ esac
 git diff --quiet && git diff --cached --quiet || { echo "commit or stash your changes first" >&2; exit 1; }
 git remote get-url template >/dev/null 2>&1 || git remote add template "$url"
 git fetch template main
-# Split where addons/kit exists: subtree refuses a prefix the work tree lacks.
+pulled() { git log --grep="^git-subtree-dir: $1"'$' --format=%H -1 | grep -q .; }
+# The menus come along if the game has them, or had them inside addons/kit
+# (the layout before they moved out): a game that deleted them stays without.
+prefixes="addons/kit"
+if [ -d addons/kit_ui ] || [ -d addons/kit/ui ]; then
+  prefixes="$prefixes addons/kit_ui"
+fi
+moved=false
+[ -d addons/kit/ui ] && [ ! -d addons/kit_ui ] && moved=true
+# Split where the prefix exists: subtree refuses a prefix the work tree lacks.
 tmp=$(mktemp -d)
 git worktree add -q --detach "$tmp" template/main
-split=$(git -C "$tmp" subtree split --prefix=addons/kit HEAD)
-git worktree remove --force "$tmp"
-if git log --grep="git-subtree-dir: addons/kit" --format=%H -1 | grep -q .; then
-  git subtree merge --prefix=addons/kit "$split" --squash -m "chore: kit from godot-template"
-else
-  # A game made from the template holds the kit as plain files: hand it to subtree once.
-  if [ -d addons/kit ]; then
-    git rm -rq addons/kit
-    git commit -qm "chore: addons/kit is now pulled from godot-template"
+for prefix in $prefixes; do
+  if [ ! -d "$tmp/$prefix" ]; then
+    echo "$prefix is not in the template's main: skipped" >&2
+    continue
   fi
-  git subtree add --prefix=addons/kit "$split" --squash -m "chore: kit from godot-template"
+  split=$(git -C "$tmp" subtree split --prefix="$prefix" HEAD)
+  if pulled "$prefix"; then
+    git subtree merge --prefix="$prefix" "$split" --squash -m "chore: $prefix from godot-template"
+  else
+    # A game made from the template holds the kit as plain files: hand it to subtree once.
+    if [ -d "$prefix" ]; then
+      git rm -rq "$prefix"
+      git commit -qm "chore: $prefix is now pulled from godot-template"
+    fi
+    git subtree add --prefix="$prefix" "$split" --squash -m "chore: $prefix from godot-template"
+  fi
+done
+git worktree remove --force "$tmp"
+if $moved; then
+  echo "The kit's menus moved to addons/kit_ui: in project.godot, point gui/theme/custom_font and the kit's en.po at addons/kit_ui, add addons/kit_ui/tests/* to the exports' exclude_filter and addons/kit_ui/fonts/*.txt to their include_filter, then run mise run check." >&2
 fi
 """

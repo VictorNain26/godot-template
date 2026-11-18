@@ -1,6 +1,6 @@
 # English for the texts of this game. French is the source language: each
 # msgid is the French text exactly as written in the code. The kit's own
-# texts are in addons/kit/locale/en.po.
+# texts are in addons/kit_ui/locale/en.po.
 msgid ""
 msgstr ""
 "Language: en\n"

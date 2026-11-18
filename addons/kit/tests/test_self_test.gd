@@ -31,3 +31,23 @@ func test_the_fonts_the_build_needs_are_found() -> void:
 	var self_test: GDScript = load(SELF_TEST)
 	var missing: Array[String] = self_test.call(&"fonts")
 	assert_array(missing).is_empty()
+
+
+func test_the_licences_checked_are_the_ones_the_kit_config_lists() -> void:
+	var self_test: GDScript = load(SELF_TEST)
+	var listed: Array[String] = self_test.call(&"licences")
+	var declared: Array = KitConfig.constant("LICENCES", [])
+	assert_int(listed.size()).is_equal(declared.size())
+	for path: Variant in declared:
+		assert_array(listed).contains([str(path)])
+
+
+func test_the_english_of_the_project_answers() -> void:
+	var self_test: GDScript = load(SELF_TEST)
+	var missing: Array[String] = self_test.call(&"english")
+	assert_array(missing).is_empty()
+
+
+func test_a_constant_the_kit_config_lacks_gives_the_fallback() -> void:
+	assert_str(str(KitConfig.constant("NO_SUCH_CONSTANT", "fallback"))).is_equal("fallback")
+	assert_object(KitConfig.find()).is_not_null()

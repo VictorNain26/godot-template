@@ -4,8 +4,14 @@
 #   tools/gdunit.sh                       every test
 #   tools/gdunit.sh res://tests/test_x.gd one file
 set -uo pipefail
+# By default: the game's tests, the kit's, and those of every kit_* addon kept
+# (the kit's menus, addons/kit_ui, may be deleted by a game that has its own).
+defaults=(res://tests res://addons/kit/tests)
+for dir in addons/kit_*/tests; do
+	[ -d "$dir" ] && defaults+=("res://$dir")
+done
 args=()
-for target in "${@:-res://tests res://addons/kit/tests}"; do
+for target in "${@:-${defaults[@]}}"; do
 	for t in $target; do args+=(-a "$t"); done
 done
 rm -rf reports

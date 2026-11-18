@@ -11,12 +11,12 @@ extends RefCounted
 # gdlint: disable=class-variable-name
 ## Cinzel for the name of the game and the headings, Atkinson Hyperlegible
 ## Next for everything that is read. Both under the SIL Open Font License.
-static var DISPLAY_PATH := "res://addons/kit/fonts/Cinzel.ttf"
-static var BODY_PATH := "res://addons/kit/fonts/AtkinsonHyperlegibleNext.ttf"
+static var DISPLAY_PATH := "res://addons/kit_ui/fonts/Cinzel.ttf"
+static var BODY_PATH := "res://addons/kit_ui/fonts/AtkinsonHyperlegibleNext.ttf"
 ## The licence travels with each font, in the repository and in a build.
 static var LICENCES: Array[String] = [
-	"res://addons/kit/fonts/Cinzel-OFL.txt",
-	"res://addons/kit/fonts/AtkinsonHyperlegibleNext-OFL.txt",
+	"res://addons/kit_ui/fonts/Cinzel-OFL.txt",
+	"res://addons/kit_ui/fonts/AtkinsonHyperlegibleNext-OFL.txt",
 ]
 
 ## Colours. INK is the dark of panels and outlines, TEXT what is read on it,

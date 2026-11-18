@@ -2,7 +2,7 @@ extends GdUnitTestSuite
 
 ## The menus both games share: the options and keys pages, their rows, the
 ## legend of keys, and how a label and its value are written in each
-## language. Part of the kit (addons/kit).
+## language. Part of the kit's menus (addons/kit_ui).
 
 
 func after_test() -> void:

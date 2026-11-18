@@ -6,7 +6,7 @@ extends Control
 ## a plate behind the row and never moves what is written on it. The pointer
 ## selects a row by passing over it and uses it with a click: on the left
 ## half of a value, the click lowers it, anywhere else it raises it.
-## Part of the kit (addons/kit), shared by every game built on the template.
+## Part of the kit's menus (addons/kit_ui), shared by every game built on the template.
 
 ## The pointer came over the row.
 signal pointed

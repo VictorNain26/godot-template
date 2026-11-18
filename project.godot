@@ -88,7 +88,7 @@ enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/gdUn
 
 [gui]
 
-theme/custom_font="res://addons/kit/fonts/AtkinsonHyperlegibleNext.ttf"
+theme/custom_font="res://addons/kit_ui/fonts/AtkinsonHyperlegibleNext.ttf"
 
 [input]
 
@@ -138,7 +138,7 @@ pause={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://addons/kit/locale/en.po", "res://locale/en.po")
+locale/translations=PackedStringArray("res://addons/kit_ui/locale/en.po", "res://locale/en.po")
 locale/fallback="fr"
 
 [kit]

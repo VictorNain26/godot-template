@@ -2,7 +2,7 @@ extends GdUnitTestSuite
 
 ## The pause menu and the options under real events: keys, gamepad buttons
 ## and a stick go through the Input singleton and the scene tree, as they do
-## in play. Part of the kit (addons/kit).
+## in play. Part of the kit's menus (addons/kit_ui).
 
 var pause: PauseMenu
 var chosen: Array[StringName] = []
