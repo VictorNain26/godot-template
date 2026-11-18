@@ -73,6 +73,9 @@ var _labels := {}
 
 
 func _init() -> void:
+	# The self-test fails on any engine error from here on (ErrorLog).
+	if OS.get_cmdline_user_args().has("--selftest"):
+		ErrorLog.start()
 	load_config()
 
 

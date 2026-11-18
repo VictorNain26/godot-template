@@ -67,8 +67,14 @@ unzip -q -j -o "$tpz" templates/version.txt templates/linux_release.x86_64 \
 """
 
 [tasks.editor]
-description = "From WSL: install the pinned Godot for Windows (SHA512-checked, skipped if present) and open this project in it"
+description = "Open this project in the editor with the real GPU: under WSL, the pinned Godot for Windows (SHA512-checked, installed once); elsewhere, mise's Godot"
 run = """
+if ! grep -qi microsoft /proc/version 2>/dev/null; then
+  # Linux or macOS: mise's pinned Godot, on this machine's GPU.
+  nohup godot -e --path "$PWD" >/dev/null 2>&1 &
+  echo "Godot opened on $PWD"
+  exit 0
+fi
 version=$(tools/godot_version.sh)
 release="${version%.stable}-stable"
 zip="Godot_v${release}_win64.exe.zip"
@@ -112,6 +118,9 @@ run = """
 out=$(timeout 300 build/linux/game.x86_64 --headless -- --selftest 2>&1)
 printf '%s\n' "$out" | grep -E "SELFTEST|ERROR" | head -20
 printf '%s\n' "$out" | grep -q "SELFTEST OK"
+# A script that fails to compile in the build fails the smoke, even if the
+# self-test passed around it.
+! printf '%s\n' "$out" | grep -qE "SCRIPT ERROR|Failed to load script"
 """
 
 [tasks.web-smoke]
