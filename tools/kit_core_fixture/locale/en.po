@@ -8,3 +8,6 @@ msgstr "Play"
 
 msgid "Sauter"
 msgstr "Jump"
+
+msgid "Quitter"
+msgstr "Quit"

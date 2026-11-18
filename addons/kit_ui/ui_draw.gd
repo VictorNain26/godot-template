@@ -205,15 +205,24 @@ static func menu(
 	return panel
 
 
-## The row of a menu drawn by `menu` that holds `point`, or -1: `panel` is
-## what `menu` returned, `count` and `size` what it was given.
-static func menu_hit(panel: Rect2, count: int, size: int, point: Vector2) -> int:
+## The rows of a menu drawn by `menu`: `panel` is what `menu` returned,
+## `count` and `size` what it was given.
+static func menu_rects(panel: Rect2, count: int, size: int) -> Array[Rect2]:
 	var tall := size + UiStyle.ROW_PAD * 2.0
 	var pitch := tall + UiStyle.UNIT * 0.5
 	var pad := UiStyle.UNIT * 2.0
+	var out: Array[Rect2] = []
 	for i in count:
 		var at := panel.position + Vector2(pad, pad + i * pitch)
-		if Rect2(at, Vector2(panel.size.x - pad * 2.0, tall)).has_point(point):
+		out.append(Rect2(at, Vector2(panel.size.x - pad * 2.0, tall)))
+	return out
+
+
+## The row of a menu drawn by `menu` that holds `point`, or -1.
+static func menu_hit(panel: Rect2, count: int, size: int, point: Vector2) -> int:
+	var rects := menu_rects(panel, count, size)
+	for i in rects.size():
+		if rects[i].has_point(point):
 			return i
 	return -1
 

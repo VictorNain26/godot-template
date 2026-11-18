@@ -41,6 +41,16 @@ static func skin() -> void:
 	pass
 
 
+## Every menu of the game, each built by one call: the kit checks each
+## against MenuContract (keys, pad, stick, pointer, texts, size, contrast).
+static func menus() -> Array[Callable]:
+	return [
+		func() -> Node: return (load("res://scenes/title.tscn") as PackedScene).instantiate(),
+		func() -> Node: return PauseMenu.new(),
+		func() -> Node: return OptionsMenu.new(),
+	]
+
+
 ## The game's checks for the export self-test (`-- --selftest`), returning
 ## what failed.
 static func self_test() -> Array[String]:
@@ -49,4 +59,5 @@ static func self_test() -> Array[String]:
 
 ## The clicks `mise run mouse-check` makes, with real mouse events under Xvfb.
 static func mouse_check(check: MouseCheck) -> void:
+	await check.menus()
 	await KitUiMouseCheck.run(check)

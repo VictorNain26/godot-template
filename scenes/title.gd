@@ -4,13 +4,17 @@ extends Control
 ## The title screen: the name of the game, a menu (start, options, quit) and
 ## the keys. Keys, a gamepad and the mouse all work; the look comes from the
 ## kit's UiStyle, so the game's skin restyles it too. Replace the backdrop
-## with the game's own; keep the menu and the legend.
+## with the game's own; keep the menu and the legend. It offers MenuContract
+## (menu_*), as every menu of the game does.
+
+signal menu_chosen(index: int)
 
 ## The scene "Commencer" opens.
 const START_SCENE := "res://scenes/main_2d.tscn"
 ## Baseline of the name of the game.
 const LOGO_LINE := 164.0
 
+var menu_dry_run := false
 var _index := 0
 var _entries: Array[String] = ["Commencer", "Options", "Quitter"]
 var _menu: OptionsMenu
@@ -63,6 +67,9 @@ func _pointer(event: InputEventMouse) -> void:
 
 
 func _choose() -> void:
+	menu_chosen.emit(_index)
+	if menu_dry_run:
+		return
 	match _entries[_index]:
 		"Options":
 			_menu.open()
@@ -91,3 +98,24 @@ func _draw() -> void:
 		labels.append(Loc.t(entry))
 	var corner := Vector2(size.x - UiStyle.MARGIN, foot - UiStyle.UNIT * 4.0)
 	_panel = UiDraw.menu(self, corner, labels, _index, Prefs.px(UiStyle.MENU))
+
+
+## MenuContract: the entries drawn on the right.
+func menu_open() -> void:
+	queue_redraw()
+
+
+func menu_rects() -> Array[Rect2]:
+	return UiDraw.menu_rects(_panel, _entries.size(), Prefs.px(UiStyle.MENU))
+
+
+func menu_index() -> int:
+	return _index
+
+
+func menu_texts() -> Array[String]:
+	return _entries.duplicate()
+
+
+func menu_text_style() -> Dictionary:
+	return {"size": UiStyle.MENU, "pairs": UiStyle.row_colours()}
