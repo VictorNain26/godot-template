@@ -53,6 +53,8 @@ La taille et les couleurs sont celles que le menu déclare : le test les vérifi
 
 ## Partager le kit entre les jeux
 
+Un jeu créé avec Copier reçoit le kit avec le reste du socle par `mise run template-update` (README du template). Ce qui suit vaut pour un jeu créé avant, sans `.copier-answers.yml`.
+
 Le kit vit dans ce template, qui en est la source. Un jeu le garde à jour avec `git subtree` : le code est copié dans le jeu, si bien qu'une session qui n'a accès qu'au jeu le lit quand même. Le jeu extrait `addons/kit` (et `addons/kit_ui` s'il les garde) de la branche `main` du template au moment de la mise à jour : aucune branche de plus à entretenir.
 
 ```bash

@@ -13,6 +13,7 @@
       "Bash(mise run web-smoke)",
       "Bash(mise run mouse-check)",
       "Bash(mise run kit-core-check)",
+      "Bash(mise run copier-check)",
       "Bash(mise run shots)",
       "Bash(tools/gdunit.sh *)",
       "Bash(godot --headless *)",

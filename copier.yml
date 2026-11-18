@@ -1,0 +1,44 @@
+# Copier makes a game from this template and, later, brings the template's
+# changes into it (mise run template-update) without touching what is the
+# game's own. Nothing here is a question: the template is copied as it is,
+# a working Godot project, and the game renames itself (skill new-game).
+#
+# Two kinds of files:
+# - the base (kit, its menus, tools, CI, Claude Code settings, mise.toml,
+#   project.godot, exports, lint): copied, then merged on every update,
+#   three-way, with the game's own changes kept;
+# - the game's own (its code, scenes, tests, config, texts, docs): copied
+#   once, never touched again by an update.
+# A file of the base the game deletes (addons/kit_ui, say) stays deleted:
+# Copier leaves out of updates what a project removed.
+
+_min_copier_version: "9.19.1"
+_templates_suffix: .jinja
+_answers_file: .copier-answers.yml
+
+_exclude:
+  # Copier's own defaults (replaced, not extended, by this list).
+  - copier.yml
+  - copier.yaml
+  - "~*"
+  - "*.py[co]"
+  - __pycache__
+  - .git
+  - .DS_Store
+  - .svn
+  # The game's own: copied by `copier copy`, never by `copier update`.
+  - |
+    {% if _copier_operation == 'update' -%}
+    /src/
+    /scenes/
+    /docs/
+    /locale/
+    /kit_config.gd
+    /kit_config.gd.uid
+    /README.md
+    /CHANGELOG.md
+    /tests/test_main_2d.gd*
+    /tests/test_main_3d.gd*
+    /tests/test_player_motion.gd*
+    /tests/test_title.gd*
+    {%- endif %}
