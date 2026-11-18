@@ -7,7 +7,8 @@
 # - the base (kit, its menus, tools, CI, Claude Code settings, mise.toml,
 #   project.godot, exports, lint): copied, then merged on every update,
 #   three-way, with the game's own changes kept;
-# - the game's own (its code, scenes, tests, config, texts, docs): copied
+# - the game's own (its code, scenes, tests, config, texts, docs, its
+#   CLAUDE.md; the shared rules are .claude/rules/socle.md): copied
 #   once, never touched again by an update.
 # A file of the base the game deletes (addons/kit_ui, say) stays deleted:
 # Copier leaves out of updates what a project removed.
@@ -36,6 +37,7 @@ _exclude:
     /kit_config.gd
     /kit_config.gd.uid
     /README.md
+    /CLAUDE.md
     /CHANGELOG.md
     /tests/test_main_2d.gd*
     /tests/test_main_3d.gd*

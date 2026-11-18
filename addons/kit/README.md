@@ -10,8 +10,8 @@ Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style
 | --- | --- |
 | `core/` | `Settings` (les options en données), `Loc` (la traduction, l'espace insécable du français), `MenuInput` (ce que veut dire une touche, un bouton ou un stick dans un menu), `KitConfig` (trouve la config du jeu) |
 | `prefs/prefs.gd` | L'autoload `Prefs` : applique les options, les garde dans `user://settings.json` à part de la progression, nomme les touches comme le clavier du joueur les imprime et les boutons de la manette quand il s'en sert |
-| `dev/` | `self_test.gd` (l'auto-test d'un exécutable exporté), `mouse_check.tscn` (`MouseCheck` : de vrais clics sous Xvfb sur les menus que la config du jeu désigne) |
-| `tests/` | Les tests du kit (GdUnit4) et `KitSim`, qui envoie de vraies touches, de vrais boutons et un vrai pointeur |
+| `dev/` | `self_test.gd` (l'auto-test d'un exécutable exporté), `mouse_check.tscn` (`MouseCheck` : de vrais clics sous Xvfb sur les menus que la config du jeu désigne), `KitSim` (de vraies touches, de vrais boutons et un vrai pointeur, pour les tests et le mouse check). Ces scripts restent dans l'export, la config du jeu les nomme ; seule la scène `mouse_check.tscn` en sort |
+| `tests/` | Les tests du kit (GdUnit4) |
 
 ## Brancher un jeu
 
@@ -26,7 +26,7 @@ Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style
    - `static func menus() -> Array[Callable]` : chaque menu du jeu, construit par un appel. Chacun tient le contrat `MenuContract` (voir plus bas) ;
    - `static func mouse_check(check: MouseCheck)` : les clics de `mise run mouse-check`. `await check.menus()` pointe et clique chaque élément de chaque menu ; le jeu y ajoute ses propres vérifications (`check.move`, `check.click`, `check.frames`, `check.expect`). Sans elle, `mise run mouse-check` échoue : des menus que personne ne clique passeraient sinon ;
    - au besoin `static func skin()` (l'allure du jeu, réglée avant tout écran), `static func self_test()` (des contrôles de plus pour l'auto-test ; elle peut attendre des images avec `await`, le temps de construire un niveau) ou `SELF_TEST` (le chemin d'un auto-test propre au jeu, lancé à la place de celui du kit).
-3. Les exports incluent les licences des polices (`include_filter`, ce ne sont pas des ressources) et excluent `addons/kit/tests/*`, `addons/kit_ui/tests/*` et `addons/kit/dev/mouse_check.*`.
+3. Les exports incluent les licences des polices (`include_filter`, ce ne sont pas des ressources) et excluent `addons/kit/tests/*`, `addons/kit_ui/tests/*` et `addons/kit/dev/mouse_check.tscn`.
 4. `mise run test` lance les tests du jeu, ceux du kit et ceux de `kit_ui` s'il est là.
 
 ## Les règles que le kit tient

@@ -48,6 +48,11 @@ func test_the_english_of_the_project_answers() -> void:
 	assert_array(missing).is_empty()
 
 
+func test_the_error_log_keeps_nothing_until_started() -> void:
+	# Tests do not run under --selftest: Prefs did not start it.
+	assert_array(ErrorLog.errors()).is_empty()
+
+
 func test_a_constant_the_kit_config_lacks_gives_the_fallback() -> void:
 	assert_str(str(KitConfig.constant("NO_SUCH_CONSTANT", "fallback"))).is_equal("fallback")
 	assert_object(KitConfig.find()).is_not_null()

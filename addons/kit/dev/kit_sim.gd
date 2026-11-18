@@ -1,8 +1,10 @@
 class_name KitSim
 extends RefCounted
 
-## Real input for tests: keys, gamepad buttons, a stick, the pointer, sent the
-## way the engine sends them. Part of the kit (addons/kit).
+## Real input for tests and the mouse check: keys, gamepad buttons, a stick,
+## the pointer, sent the way the engine sends them. Kept in exports: the
+## game's kit config names MouseCheck, which uses it. Part of the kit
+## (addons/kit).
 ##
 ## Without a window the engine gives the mouse to no Control: a test that
 ## clicks a menu emits its rows' signals instead, and a scene run under Xvfb

@@ -150,7 +150,3 @@ config="res://kit_config.gd"
 3d/physics_engine="Jolt Physics"
 common/physics_interpolation=true
 
-[rendering]
-
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"

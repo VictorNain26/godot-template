@@ -2,11 +2,11 @@
 # Proves the Copier set-up (copier.yml) does what it promises, on the
 # template as it stands in this folder:
 #   1. `copier copy` makes a game that passes its own `mise run check`;
-#   2. the game changes its name, its code and its config, and deletes a file
+#   2. the game changes its name, code, config and CLAUDE.md, and deletes a file
 #      of the base (.editorconfig);
 #   3. the template changes the same files, and the kit;
-#   4. `copier update` brings the kit and project.godot's new line into the
-#      game, keeps the game's name, code and config as they were, does not
+#   4. `copier update` brings the kit, the shared rules and project.godot's
+#      new line into the game, keeps its name, code, config and CLAUDE.md, does not
 #      bring back the deleted file, leaves no conflict, and the game still
 #      passes `mise run check`.
 #   tools/copier_check.sh        (mise run copier-check)
@@ -53,6 +53,7 @@ step "the game makes itself its own"
 sed -i 's/^config\/name=.*/config\/name="Banc"/' project.godot
 echo "# the game's own line" >>src/player_motion.gd
 echo "# the game's own config line" >>kit_config.gd
+echo "The game's own rule." >>CLAUDE.md
 git rm -q .editorconfig
 git commit -qam "the game's changes"
 
@@ -62,6 +63,8 @@ echo "Template v2 line." >>addons/kit/README.md
 echo "# template v2 line" >>src/player_motion.gd
 echo "# template v2 config line" >>kit_config.gd
 echo "# template v2" >>.editorconfig
+echo "Template v2 rule." >>.claude/rules/socle.md
+echo "Template v2 CLAUDE line." >>CLAUDE.md
 grep -q '^gdscript/warnings/return_value_discarded=0$' project.godot || fail "project.godot changed: update this check"
 sed -i 's/^gdscript\/warnings\/return_value_discarded=0$/gdscript\/warnings\/return_value_discarded=1/' project.godot
 git commit -qam "template v2"
@@ -81,6 +84,9 @@ grep -q "^# the game's own line$" src/player_motion.gd || fail "the update lost 
 grep -q "^# the game's own config line$" kit_config.gd || fail "the update lost the game's config"
 ! grep -q '^# template v2 config line$' kit_config.gd || fail "the update wrote into the game's config"
 [ ! -e .editorconfig ] || fail "the update brought back a file the game deleted"
+grep -q '^Template v2 rule\.$' .claude/rules/socle.md || fail "the shared rules did not reach the game"
+grep -q "^The game's own rule\.$" CLAUDE.md || fail "the update lost the game's CLAUDE.md"
+! grep -q '^Template v2 CLAUDE line\.$' CLAUDE.md || fail "the update wrote into the game's CLAUDE.md"
 git add -A
 git commit -qm "template update"
 

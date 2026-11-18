@@ -10,9 +10,9 @@ Le jeu vient de `copier copy --vcs-ref main gh:VictorNain26/godot-template <doss
 
 1. Changer `config/name` (et `config/description`) dans `project.godot`, et remettre `config/version` à `0.1.0`.
 2. Lancer `mise install` et `git lfs install`.
-3. Garder la démo `*_2d` ou `*_3d` (scène, script, test) et supprimer l'autre ; `START_SCENE` de `scenes/title.gd` pointe vers celle qu'on garde.
+3. Choisir le rendu : Forward+ (par défaut, pour la 3D et l’éclairage avancé) ou Compatibility (`rendering/renderer/rendering_method="gl_compatibility"`, pour un jeu 2D ou web d’abord, plus léger). Garder la démo `*_2d` ou `*_3d` (scène, script, test) et supprimer l'autre ; `START_SCENE` de `scenes/title.gd` pointe vers celle qu'on garde.
 4. Remplacer `src/player_motion.gd` et son test par les règles du jeu.
-5. Écrire `docs/vision.md` avec l'utilisateur avant de coder la suite.
+5. Écrire `docs/vision.md` avec l’utilisateur avant de coder la suite, puis remplir `CLAUDE.md` avec ce que Claude doit savoir du jeu (les règles communes restent dans `.claude/rules/socle.md`).
 6. Dans `kit_config.gd` : les actions du jeu (et leurs touches dans `project.godot`), la légende. Puis choisir l'interface : garder les menus du kit et leur donner un skin, ou les remplacer par ceux du jeu (`addons/kit_ui/README.md`, « Les remplacer »). Tout menu ajouté au jeu tient `MenuContract` et entre dans `menus()`. Ajouter chaque nouveau texte à `locale/en.po`.
 7. `mise run check`, puis `mise run shots` et lire les captures.
 8. Dans GitHub : Settings > Pages > Source : GitHub Actions, une fois, pour que la publication mette la version web en ligne.

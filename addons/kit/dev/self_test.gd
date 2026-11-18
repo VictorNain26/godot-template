@@ -6,7 +6,8 @@ extends Node
 ## stage. A game adds its own checks with a `static func self_test() ->
 ## Array[String]` in its kit config, returning what failed; it may await
 ## frames (building each level takes a few). The kit's menus add theirs there
-## (KitUiSelfTest). Prints SELFTEST OK or SELFTEST FAILED and sets the exit
+## (KitUiSelfTest). Any engine error since start-up fails it too (ErrorLog).
+## Prints SELFTEST OK or SELFTEST FAILED and sets the exit
 ## code.
 ## Part of the kit (addons/kit).
 
@@ -33,6 +34,8 @@ func _ready() -> void:
 			var reported: Array = more
 			for failure: Variant in reported:
 				failures.append(str(failure))
+	for error in ErrorLog.errors():
+		failures.append("engine error: " + error)
 	if failures.is_empty():
 		print("SELFTEST OK")
 	else:

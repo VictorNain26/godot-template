@@ -15,6 +15,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numéros de v
 
 - Copier (`copier.yml`) crée un jeu depuis le template et l'y garde à jour (`mise run template-update`) : le socle fusionné à trois voies, ce qui est au jeu jamais touché, un fichier supprimé par le jeu jamais rendu. `mise run copier-check` le prouve de bout en bout (copie, `check` du jeu, mise à jour, `check` encore), en CI aussi.
 
+- Rendu Forward+ par défaut ; là où Vulkan manque (WSL2, CI, Xvfb), Godot bascule seul en Compatibility, et le web reste en Compatibility. `mise run editor` ouvre l'éditeur Windows sous WSL et celui de mise ailleurs.
+- `CLAUDE.md` appartient au jeu ; les règles communes passent dans `.claude/rules/socle.md`, mis à jour par `template-update`.
+- L'auto-test de l'exécutable échoue sur toute erreur du moteur depuis le démarrage (`ErrorLog`, un `Logger` du moteur), et `export-smoke` sur toute `SCRIPT ERROR`.
+
 ### Corrigé
+
+- Depuis la séparation des menus, l'export excluait `mouse_check.gd` et `KitSim`, que la config du kit nomme : dans l'exécutable, `kit_config.gd` ne compilait plus (pas d'actions, pas de skin) et l'auto-test affichait pourtant `SELFTEST OK`. Les scripts restent dans l'export ; seule la scène `mouse_check.tscn` en sort.
 
 - Le kit échappait aux avertissements de typage (tout `res://addons` était exclu) : une soixantaine de transtypages et d'arguments `Variant` non vérifiés, de variables qui en masquaient d'autres et de divisions entières, maintenant typés et nommés.
