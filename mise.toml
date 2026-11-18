@@ -2,6 +2,7 @@
 godot = "4.7.2-stable"
 "pipx:gdtoolkit" = "4.5.0"
 jq = "1.8.2"
+"pipx:copier" = "9.19.1"
 
 [tasks.check]
 description = "Full local verification: lint, compile everything, GdUnit4 tests, smoke run of every scene"
@@ -139,6 +140,24 @@ fi
 description = "Save pictures of the title, the options, a demo and its pause to build/shots (OUT=dir), under Xvfb"
 depends = ["import"]
 run = "timeout 300 xvfb-run -a godot --path . --rendering-driver opengl3 res://tools/shots/shots.tscn 2>&1 | grep -E 'SHOT|SCRIPT ERROR'"
+
+[tasks.template-update]
+description = "Bring the template's latest main into this game with Copier: the base merged three-way, the game's own files untouched"
+run = """
+set -e
+[ -f .copier-answers.yml ] || { echo "this game was not made with Copier (no .copier-answers.yml): use mise run kit-update" >&2; exit 1; }
+git diff --quiet && git diff --cached --quiet || { echo "commit or stash your changes first" >&2; exit 1; }
+copier update --defaults --vcs-ref "${TEMPLATE_REF:-main}" --conflict inline
+if git grep -nE '^(<<<<<<<|>>>>>>>)' -- . >/dev/null; then
+  echo "conflicts to resolve (git grep -n '^<<<<<<<'), then mise run check" >&2
+  exit 1
+fi
+echo "template updated: review git diff, then mise run check"
+"""
+
+[tasks.copier-check]
+description = "Prove Copier makes a game from this template and updates it without touching the game's own files (COPIER CHECK OK)"
+run = "tools/copier_check.sh"
 
 [tasks.kit-update]
 description = "Pull the latest kit (addons/kit) and, if the game keeps them, its menus (addons/kit_ui) from godot-template's main with git subtree"

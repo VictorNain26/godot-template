@@ -29,6 +29,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libgl1
       - run: mise run mouse-check
       - run: mise run kit-core-check
+      - run: mise run copier-check
 
   export:
     # Template download is large: export on main, tags and on demand, not on PRs.
