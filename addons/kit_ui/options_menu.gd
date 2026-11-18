@@ -2,9 +2,11 @@ class_name OptionsMenu
 extends Control
 
 ## Options and key bindings, shared by the pause menu and the title screen.
-## While it is open it takes every key and button.
+## While it is open it takes every key and button. It offers MenuContract
+## (menu_*) on the page shown.
 
 signal closed
+signal menu_chosen(index: int)
 
 const MAIN: Array[StringName] = [
 	&"master", &"music", &"sfx", &"fullscreen", &"shake", &"text", &"locale", &"keys", &"back"
@@ -27,6 +29,7 @@ const WIDTH := 640
 var on_keys := false
 var listening := false
 var index := 0
+var menu_dry_run := false
 var _heading: Label
 var _panel: PanelContainer
 var _scroll: ScrollContainer
@@ -147,6 +150,9 @@ func change(direction: int) -> void:
 
 
 func accept() -> void:
+	menu_chosen.emit(index)
+	if menu_dry_run:
+		return
 	var row := rows()[index]
 	if Prefs.actions.has(row):
 		listening = true
@@ -293,6 +299,10 @@ func _click(direction: int, i: int) -> void:
 	if i >= rows().size():
 		return
 	index = i
+	menu_chosen.emit(i)
+	if menu_dry_run:
+		refresh()
+		return
 	var kind := _kind(rows()[i])
 	if kind == MenuRow.Kind.VALUE or kind == MenuRow.Kind.SLIDER:
 		change(direction)
@@ -303,3 +313,30 @@ func _click(direction: int, i: int) -> void:
 
 func _yes_no(value: bool) -> String:
 	return Loc.t("Oui") if value else Loc.t("Non")
+
+
+## MenuContract: the rows of the page shown.
+func menu_open() -> void:
+	open()
+
+
+func menu_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	for i in rows().size():
+		out.append(_rows[i].get_global_rect())
+	return out
+
+
+func menu_index() -> int:
+	return index
+
+
+func menu_texts() -> Array[String]:
+	var out: Array[String] = []
+	for row in rows():
+		out.append(str(Prefs.actions[row]) if Prefs.actions.has(row) else str(NAMES[row]))
+	return out
+
+
+func menu_text_style() -> Dictionary:
+	return {"size": UiStyle.MENU, "pairs": UiStyle.row_colours()}

@@ -10,16 +10,18 @@ extends CanvasLayer
 ## `blocked`, when set, is asked before any key reaches the menu: while it
 ## answers true (a scene change, say), the pause key neither opens nor
 ## closes it. `moved` lets the game play a sound when the selection
-## moves; the kit itself makes none.
+## moves; the kit itself makes none. It offers MenuContract (menu_*).
 
 signal chosen(id: StringName)
 signal moved
+signal menu_chosen(index: int)
 
 ## Width of the panel before the player's text scale.
 const WIDTH := 360
 
 var entries: Array = [[&"resume", "Reprendre"], [&"options", "Options"], [&"title", "Écran titre"]]
 var blocked := Callable()
+var menu_dry_run := false
 var options: OptionsMenu
 var _root: Control
 var _index := 0
@@ -143,6 +145,9 @@ func _click(_direction: int, i: int) -> void:
 
 
 func _choose() -> void:
+	menu_chosen.emit(_index)
+	if menu_dry_run:
+		return
 	var picked: Array = entries[_index]
 	var id := StringName(str(picked[0]))
 	match id:
@@ -174,6 +179,33 @@ func _refresh() -> void:
 		wide = maxf(wide, needed + UiStyle.UNIT * 6.0)
 	# Wide enough for the longest entry at this text size.
 	_rows[0].custom_minimum_size.x = wide
+
+
+## MenuContract: the menu opens as the pause key opens it.
+func menu_open() -> void:
+	_set_paused(true)
+
+
+func menu_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	for row in _rows:
+		out.append(row.get_global_rect())
+	return out
+
+
+func menu_index() -> int:
+	return _index
+
+
+func menu_texts() -> Array[String]:
+	var out: Array[String] = []
+	for entry: Array in entries:
+		out.append(str(entry[1]))
+	return out
+
+
+func menu_text_style() -> Dictionary:
+	return {"size": UiStyle.MENU, "pairs": UiStyle.row_colours()}
 
 
 ## What the keys do while the game is paused, shown under the panel: the

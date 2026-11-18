@@ -12,11 +12,13 @@ static func self_test() -> Array[String]:
 	return []
 
 
-## Clicks the game's own menu: its one button counts the clicks.
+## The game's menus, checked against MenuContract.
+static func menus() -> Array[Callable]:
+	return [
+		func() -> Node: return (load("res://scenes/own_menu.tscn") as PackedScene).instantiate()
+	]
+
+
+## Clicks the game's own menu: every button pointed at and clicked.
 static func mouse_check(check: MouseCheck) -> void:
-	var menu: OwnMenu = (load("res://scenes/own_menu.tscn") as PackedScene).instantiate()
-	check.add_child(menu)
-	await check.frames(6)
-	await check.click(menu.play.get_global_rect().get_center())
-	check.expect(menu.clicks == 1, "a click on the game's own button does not reach it")
-	menu.free()
+	await check.menus()

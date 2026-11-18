@@ -8,9 +8,9 @@ extends GdUnitTestSuite
 
 ## A size on a 1280 by 720 screen that is 28 pixels on a 1080p one: the floor
 ## the Game Accessibility Guidelines give for text.
-const FLOOR := 19
+const FLOOR := MenuContract.TEXT_FLOOR
 ## WCAG AA for text.
-const TEXT_MIN := 4.5
+const TEXT_MIN := MenuContract.CONTRAST_MIN
 ## Where a game keeps the scripts of its screens.
 const SOURCES: Array[String] = ["res://src", "res://scenes", "res://scripts", "res://addons/kit"]
 

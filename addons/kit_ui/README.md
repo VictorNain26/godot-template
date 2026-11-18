@@ -15,7 +15,7 @@ Des menus prêts à l'emploi pour un jeu qui utilise le kit (`addons/kit`) : la 
 
 ## Les garder
 
-La config du jeu (`kit_config.gd`) les branche en trois endroits : `LICENCES` liste les licences de `fonts/`, `self_test()` renvoie `KitUiSelfTest.run()`, `mouse_check(check)` appelle `KitUiMouseCheck.run(check)`. `project.godot` déclare `locale/en.po` dans les traductions et la police de lecture dans `gui/theme/custom_font`.
+Les trois menus (`OptionsMenu`, `PauseMenu`, et l'écran titre du template) tiennent le contrat `MenuContract` du kit. La config du jeu (`kit_config.gd`) les branche : `menus()` les liste, `LICENCES` liste les licences de `fonts/`, `self_test()` renvoie `KitUiSelfTest.run()`, `mouse_check(check)` appelle `check.menus()` puis `KitUiMouseCheck.run(check)`. `project.godot` déclare `locale/en.po` dans les traductions et la police de lecture dans `gui/theme/custom_font`.
 
 ## Changer leur apparence : le skin
 
@@ -35,7 +35,7 @@ static func skin() -> void:
 Pour une interface d'une autre forme (menu circulaire, interface dans le décor, inventaire en grille) :
 
 1. Supprimer `addons/kit_ui` et les écrans qui s'en servent (`scenes/title.gd`, `scenes/game_pause.gd` dans le template).
-2. Dans `kit_config.gd` : retirer les appels à `KitUiSelfTest` et `KitUiMouseCheck`, mettre dans `LICENCES` les licences des polices du jeu, et faire cliquer ses propres menus par `mouse_check(check)`.
+2. Dans `kit_config.gd` : retirer les appels à `KitUiSelfTest` et `KitUiMouseCheck`, mettre dans `LICENCES` les licences des polices du jeu, lister ses propres menus dans `menus()` (chacun tient `MenuContract`, voir le README du kit) et garder `await check.menus()` dans `mouse_check(check)`.
 3. Dans `project.godot` et `export_presets.cfg` : retirer `addons/kit_ui/locale/en.po` des traductions, pointer `gui/theme/custom_font` sur la police du jeu, et mettre ses licences dans `include_filter`.
 4. `mise run check` puis `mise run mouse-check`.
 

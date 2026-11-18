@@ -23,7 +23,8 @@ Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style
 2. `kit_config.gd`, à la racine :
    - `ACTIONS` (les actions que le joueur peut changer, avec leur nom dans le menu), `FIXED_ACTIONS`, `HELP` (la légende des écrans titre et pause) ;
    - `LICENCES` : les fichiers de licence des polices du jeu, que l'auto-test cherche dans l'exécutable ;
-   - `static func mouse_check(check: MouseCheck)` : ouvre les menus du jeu et clique dedans (`check.move`, `check.click`, `check.frames`, `check.expect`). Sans elle, `mise run mouse-check` échoue : des menus que personne ne clique passeraient sinon ;
+   - `static func menus() -> Array[Callable]` : chaque menu du jeu, construit par un appel. Chacun tient le contrat `MenuContract` (voir plus bas) ;
+   - `static func mouse_check(check: MouseCheck)` : les clics de `mise run mouse-check`. `await check.menus()` pointe et clique chaque élément de chaque menu ; le jeu y ajoute ses propres vérifications (`check.move`, `check.click`, `check.frames`, `check.expect`). Sans elle, `mise run mouse-check` échoue : des menus que personne ne clique passeraient sinon ;
    - au besoin `static func skin()` (l'allure du jeu, réglée avant tout écran), `static func self_test()` (des contrôles de plus pour l'auto-test ; elle peut attendre des images avec `await`, le temps de construire un niveau) ou `SELF_TEST` (le chemin d'un auto-test propre au jeu, lancé à la place de celui du kit).
 3. Les exports incluent les licences des polices (`include_filter`, ce ne sont pas des ressources) et excluent `addons/kit/tests/*`, `addons/kit_ui/tests/*` et `addons/kit/dev/mouse_check.*`.
 4. `mise run test` lance les tests du jeu, ceux du kit et ceux de `kit_ui` s'il est là.
@@ -35,6 +36,20 @@ Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style
 - Le display server `headless` et le web ne connaissent pas la disposition du clavier : `Prefs._printed` garde alors le nom de la position.
 - Un test ne lit ni n'écrit les fichiers du joueur : `Prefs.persist` est coupé pendant un test, avec ou sans fenêtre.
 - Le kit ne nomme pas ses menus (`test_core_alone.gd`) et tourne sans eux (`mise run kit-core-check`, aussi en CI).
+
+## Le contrat des menus
+
+Quel que soit son dessin (menus du kit, boutons du moteur, menu circulaire, interface dans le décor), chaque menu listé par `menus()` offre `MenuContract` : le signal `menu_chosen(index)`, `menu_dry_run` (un choix n'émet que le signal, pour qu'un test puisse choisir « Quitter » sans quitter), `menu_open()`, `menu_rects()` (chaque élément à l'écran, dans l'ordre de haut en bas), `menu_index()`, `menu_texts()` (les textes tels qu'écrits, en français) et `menu_text_style()` (taille du texte à 100 % et paires de couleurs texte / fond, telles qu'à l'écran). Le détail est en tête de `core/menu_contract.gd`.
+
+`tests/test_menu_contract.gd` vérifie alors chaque menu avec de vrais événements :
+- les flèches, les touches de déplacement du jeu, la croix et le stick de la manette avancent d'un élément (au bout, la sélection revient au début ou reste) ;
+- Entrée et le bouton A choisissent l'élément sélectionné ;
+- chaque élément est entièrement à l'écran, fait au moins 24 × 24 px (WCAG 2.2, 2.5.8) et ne chevauche pas les autres ;
+- chaque texte a son anglais, mesure au moins 19 px à 100 % et contraste à 4,5:1 au moins avec ce qu'il recouvre (WCAG 2.2, 1.4.3).
+
+Sous Xvfb, `check.menus()` vérifie que le pointeur sélectionne chaque élément et qu'un clic le choisit. `tools/kit_core_fixture` en est un exemple minimal, avec des `Button` du moteur.
+
+La taille et les couleurs sont celles que le menu déclare : le test les vérifie, il ne les mesure pas à l'écran. Un menu qui déclare autre chose que ce qu'il dessine passe à tort ; une capture (`mise run shots`) reste à relire après un changement d'allure.
 
 ## Partager le kit entre les jeux
 

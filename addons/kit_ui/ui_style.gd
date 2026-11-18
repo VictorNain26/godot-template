@@ -77,17 +77,25 @@ static func reset() -> void:
 	_cache.clear()
 
 
-## WCAG contrast ratio between two colours, from 1 to 21.
+## WCAG contrast ratio between two colours, from 1 to 21 (MenuContract's).
 static func contrast(a: Color, b: Color) -> float:
-	var la := luminance(a)
-	var lb := luminance(b)
-	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
+	return MenuContract.contrast(a, b)
 
 
-## Relative luminance: the weighted sum of the linearised channels.
+## Relative luminance (MenuContract's).
 static func luminance(c: Color) -> float:
-	var l := c.srgb_to_linear()
-	return 0.2126 * l.r + 0.7152 * l.g + 0.0722 * l.b
+	return MenuContract.luminance(c)
+
+
+## The [text, under] colours of a menu row, for MenuContract: plain and
+## selected text, on a panel over the brightest and the darkest ground.
+static func row_colours() -> Array:
+	var out: Array = []
+	for ground: Color in [Color.WHITE, Color.BLACK]:
+		var under := over(INK, PANEL_ALPHA, ground)
+		out.append([over(TEXT, SECONDARY, under), under])
+		out.append([ACCENT_HOT, over(ACCENT, FOCUS_ALPHA, under)])
+	return out
 
 
 ## `top` painted at `alpha` over `under`.
