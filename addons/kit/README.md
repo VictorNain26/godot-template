@@ -2,7 +2,7 @@
 
 Ce que tout jeu fait sur ce template partage, quel que soit son genre : les options et leur fichier, la traduction, les entrées clavier, manette et souris, et les outils qui vérifient tout cela (auto-test de l'exécutable, vrais clics sous Xvfb). Il est né de Cairnlight et d'Emberwake, qui l'utilisent.
 
-Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style) vivent à part, dans `addons/kit_ui` (voir son README) : un jeu les garde, les habille par un skin, ou supprime le dossier et écrit les siens. Le kit ne nomme aucune classe ni aucun fichier de `kit_ui` : `test_core_alone.gd` le vérifie, et `mise run kit-core-check` fait tourner le kit sur un jeu qui a son propre menu et pas de `kit_ui`.
+Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style) vivent à part, dans `addons/kit_ui` (voir son README) : un jeu les garde, les habille par un skin, ou supprime le dossier et écrit les siens. Le kit ne nomme aucune classe ni aucun fichier de `kit_ui` : `test_core_alone.gd` le vérifie.
 
 ## Ce qu'il contient
 
@@ -35,7 +35,7 @@ Le kit n'impose **aucune interface**. Ses menus (options, pause, avec leur style
 - Sans fenêtre, aucun événement souris n'atteint un `Control` : `mise run mouse-check` clique pour de vrai sous Xvfb, sur ce que `mouse_check()` de la config désigne.
 - Le display server `headless` et le web ne connaissent pas la disposition du clavier : `Prefs._printed` garde alors le nom de la position.
 - Un test ne lit ni n'écrit les fichiers du joueur : `Prefs.persist` est coupé pendant un test, avec ou sans fenêtre.
-- Le kit ne nomme pas ses menus (`test_core_alone.gd`) et tourne sans eux (`mise run kit-core-check`, aussi en CI).
+- Le kit ne nomme pas ses menus (`test_core_alone.gd`).
 
 ## Le contrat des menus
 
@@ -47,13 +47,11 @@ Quel que soit son dessin (menus du kit, boutons du moteur, menu circulaire, inte
 - chaque élément est entièrement à l'écran, fait au moins 24 × 24 px (WCAG 2.2, 2.5.8) et ne chevauche pas les autres ;
 - chaque texte a son anglais, mesure au moins 19 px à 100 % et contraste à 4,5:1 au moins avec ce qu'il recouvre (WCAG 2.2, 1.4.3).
 
-Sous Xvfb, `check.menus()` vérifie que le pointeur sélectionne chaque élément et qu'un clic le choisit. `tools/kit_core_fixture` en est un exemple minimal, avec des `Button` du moteur.
+Sous Xvfb, `check.menus()` vérifie que le pointeur sélectionne chaque élément et qu'un clic le choisit.
 
 La taille et les couleurs sont celles que le menu déclare : le test les vérifie, il ne les mesure pas à l'écran. Un menu qui déclare autre chose que ce qu'il dessine passe à tort ; une capture (`mise run shots`) reste à relire après un changement d'allure.
 
 ## Partager le kit entre les jeux
-
-Un jeu créé avec Copier reçoit le kit avec le reste du socle par `mise run template-update` (README du template). Ce qui suit vaut pour un jeu créé avant, sans `.copier-answers.yml`.
 
 Le kit vit dans ce template, qui en est la source. Un jeu le garde à jour avec `git subtree` : le code est copié dans le jeu, si bien qu'une session qui n'a accès qu'au jeu le lit quand même. Le jeu extrait `addons/kit` (et `addons/kit_ui` s'il les garde) de la branche `main` du template au moment de la mise à jour : aucune branche de plus à entretenir.
 

@@ -39,7 +39,7 @@ Pour une interface d'une autre forme (menu circulaire, interface dans le décor,
 3. Dans `project.godot` et `export_presets.cfg` : retirer `addons/kit_ui/locale/en.po` des traductions, pointer `gui/theme/custom_font` sur la police du jeu, et mettre ses licences dans `include_filter`.
 4. `mise run check` puis `mise run mouse-check`.
 
-Les nouveaux menus gardent `Prefs` (options, touches, `px()`, `key_label()`), `MenuInput`, `Loc` et `KitSim`. `tools/kit_core_fixture` en est un exemple minimal, vérifié par `mise run kit-core-check`.
+Les nouveaux menus gardent `Prefs` (options, touches, `px()`, `key_label()`), `MenuInput`, `Loc` et `KitSim`.
 
 ## Les règles qu'ils tiennent
 
