@@ -64,7 +64,7 @@ func _ready() -> void:
 	box.add_child(_scroll)
 	_list = VBoxContainer.new()
 	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_list.add_theme_constant_override(&"separation", UiStyle.UNIT / 2)
+	_list.add_theme_constant_override(&"separation", floori(UiStyle.UNIT / 2.0))
 	_scroll.add_child(_list)
 	_legend = LegendBar.new()
 	box.add_child(_legend)
@@ -97,7 +97,8 @@ func row_text(row: StringName) -> String:
 
 
 func row_label(row: StringName) -> String:
-	return Loc.t(Prefs.actions[row]) if Prefs.actions.has(row) else Loc.t(NAMES[row])
+	var shown: String = Prefs.actions[row] if Prefs.actions.has(row) else NAMES[row]
+	return Loc.t(shown)
 
 
 ## The value a row holds, empty for a row that only does something.
@@ -114,7 +115,7 @@ func row_value(row: StringName) -> String:
 	elif row == &"shake":
 		value = _yes_no(s.shake)
 	elif row == &"text":
-		value = Loc.t("%d %%") % int(round(s.text_scale * 100.0))
+		value = Loc.t("%d %%") % roundi(s.text_scale * 100.0)
 	elif row == &"locale":
 		value = Settings.LOCALE_NAMES[s.locale]
 	return value

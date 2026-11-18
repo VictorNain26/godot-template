@@ -45,19 +45,21 @@ func test_the_type_scale_keeps_its_order_and_its_floor() -> void:
 	assert_int(UiStyle.HUD).is_greater_equal(UiStyle.SMALL)
 	# The order holds at every text size the options offer.
 	for scale: float in Settings.TEXT_SCALES:
-		assert_int(int(round(UiStyle.HEADING * scale))).is_greater(int(round(UiStyle.MENU * scale)))
+		assert_int(roundi(UiStyle.HEADING * scale)).is_greater(roundi(UiStyle.MENU * scale))
 
 
 func test_weights_figures_and_line_height_come_from_the_fonts() -> void:
-	var regular := UiStyle.body().get_string_size("Reprendre", 0, -1, UiStyle.MENU).x
-	var strong := UiStyle.body(UiStyle.STRONG).get_string_size("Reprendre", 0, -1, UiStyle.MENU).x
+	var regular := UiStyle.body().get_string_size("Reprendre", UiDraw.LEFT, -1, UiStyle.MENU).x
+	var strong := (
+		UiStyle.body(UiStyle.STRONG).get_string_size("Reprendre", UiDraw.LEFT, -1, UiStyle.MENU).x
+	)
 	assert_float(strong).is_greater_equal(regular)
 	# A counter does not change width as it counts.
-	var ones := UiStyle.figures().get_string_size("1:11.11", 0, -1, UiStyle.HUD).x
-	var zeros := UiStyle.figures().get_string_size("0:00.00", 0, -1, UiStyle.HUD).x
+	var ones := UiStyle.figures().get_string_size("1:11.11", UiDraw.LEFT, -1, UiStyle.HUD).x
+	var zeros := UiStyle.figures().get_string_size("0:00.00", UiDraw.LEFT, -1, UiStyle.HUD).x
 	assert_float(ones).is_equal(zeros)
 	for scale: float in Settings.TEXT_SCALES:
-		var size := int(round(UiStyle.BODY * scale))
+		var size := roundi(UiStyle.BODY * scale)
 		var line := UiStyle.reading(size).get_height(size)
 		assert_float(line).is_equal_approx(size * UiStyle.LINE_HEIGHT, 1.0)
 
@@ -89,7 +91,9 @@ func test_both_faces_hold_every_character_the_game_writes() -> void:
 
 func test_the_name_of_the_game_fits_between_the_margins() -> void:
 	var title := str(ProjectSettings.get_setting("application/config/name")).to_upper()
-	var width := UiStyle.display(UiStyle.LOGO).get_string_size(title, 0, -1, UiStyle.LOGO).x
+	var width := (
+		UiStyle.display(UiStyle.LOGO).get_string_size(title, UiDraw.LEFT, -1, UiStyle.LOGO).x
+	)
 	assert_float(width).is_less_equal(1280.0 - 2.0 * UiStyle.MARGIN)
 
 

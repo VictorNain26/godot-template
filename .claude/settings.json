@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(mise run check)",
@@ -28,9 +29,37 @@
       "mcp__godot-ai__game_manage",
       "mcp__godot-ai__test_run"
     ],
-    "deny": ["Edit(**/*.tscn)", "Edit(**/*.tres)", "Edit(**/*.uid)"]
+    "deny": [
+      "Edit(**/*.tscn)",
+      "Edit(**/*.tres)",
+      "Edit(**/*.uid)",
+      "Edit(/addons/gdUnit4/**)",
+      "Edit(/addons/godot_ai/**)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --force-with-lease *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(/.godot/export_credentials.cfg)",
+      "Read(**/*.keystore)",
+      "Read(**/*.p12)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Edit(/.claude/**)",
+      "Edit(/.mcp.json)",
+      "Edit(/tools/claude/**)",
+      "Edit(/gdlintrc)",
+      "Edit(/mise.toml)",
+      "Edit(/.github/**)"
+    ],
+    "disableBypassPermissionsMode": "disable"
   },
-  "enabledMcpjsonServers": ["godot-ai"],
+  "enabledMcpjsonServers": [
+    "godot-ai"
+  ],
   "hooks": {
     "PostToolUse": [
       {
@@ -49,8 +78,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"${CLAUDE_PROJECT_DIR}\" && mise run lint 1>&2 || exit 2",
-            "timeout": 120
+            "command": "\"${CLAUDE_PROJECT_DIR}\"/.claude/hooks/check-before-stop.sh",
+            "timeout": 180
           }
         ]
       }

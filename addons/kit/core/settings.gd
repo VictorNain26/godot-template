@@ -54,21 +54,29 @@ static func from_dict(data: Dictionary) -> Settings:
 	s.fullscreen = _flag(data.get("fullscreen"), false)
 	s.shake = _flag(data.get("shake"), true)
 	var wanted: Variant = data.get("text_scale")
-	if (wanted is float or wanted is int) and TEXT_SCALES.has(float(wanted)):
-		s.text_scale = float(wanted)
+	if wanted is float or wanted is int:
+		var scale: float = wanted
+		if TEXT_SCALES.has(scale):
+			s.text_scale = scale
 	var lang := str(data.get("locale", "fr"))
 	s.locale = lang if LOCALES.has(lang) else "fr"
 	var saved: Variant = data.get("keys")
 	if saved is Dictionary:
-		for action: Variant in saved:
-			var code := _whole((saved as Dictionary)[action], 0)
+		var chosen: Dictionary = saved
+		for action: Variant in chosen:
+			var code := _whole(chosen[action], 0)
 			if code > 0:
 				s.keys[StringName(str(action))] = code
 	return s
 
 
 static func _whole(value: Variant, fallback: int) -> int:
-	return int(value) if value is int or value is float else fallback
+	if value is int:
+		return value
+	if value is float:
+		var number: float = value
+		return int(number)
+	return fallback
 
 
 static func _flag(value: Variant, fallback: bool) -> bool:
@@ -92,7 +100,8 @@ func to_dict() -> Dictionary:
 
 
 func volume(which: StringName) -> int:
-	return int(get(which))
+	var level: int = get(which)
+	return level
 
 
 func nudge_volume(which: StringName, direction: int) -> void:
@@ -131,7 +140,8 @@ func rebind(action: StringName, code: int, defaults: Dictionary) -> bool:
 func bindings(defaults: Dictionary) -> Dictionary:
 	var layout := {}
 	for action: StringName in defaults:
-		layout[action] = (defaults[action] as Array).duplicate()
+		var codes: Array = defaults[action]
+		layout[action] = codes.duplicate()
 	for action: StringName in keys:
 		if not layout.has(action):
 			continue
@@ -139,10 +149,12 @@ func bindings(defaults: Dictionary) -> Dictionary:
 		var given_up: Array = layout[action]
 		for other: StringName in layout:
 			if other != action:
-				(layout[other] as Array).erase(code)
+				var theirs: Array = layout[other]
+				theirs.erase(code)
 		layout[action] = [code]
 		for other: StringName in layout:
-			if (layout[other] as Array).is_empty():
+			var left: Array = layout[other]
+			if left.is_empty():
 				layout[other] = _spare(layout, given_up)
 	return layout
 
@@ -151,7 +163,8 @@ func _spare(layout: Dictionary, candidates: Array) -> Array:
 	for code: int in candidates:
 		var free := true
 		for action: StringName in layout:
-			free = free and not (layout[action] as Array).has(code)
+			var taken: Array = layout[action]
+			free = free and not taken.has(code)
 		if free:
 			return [code]
 	return []

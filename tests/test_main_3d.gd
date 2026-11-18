@@ -44,6 +44,7 @@ func test_player_is_a_body_running_player_script() -> void:
 
 
 # GdUnit4 fills test_parameters itself: it is never read by the test.
+@warning_ignore("unused_parameter")
 func test_each_action_moves_player_its_way(
 	action: String,
 	direction: Vector3,

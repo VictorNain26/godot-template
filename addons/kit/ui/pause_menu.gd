@@ -56,7 +56,7 @@ func _ready() -> void:
 	panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	column.add_child(panel)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override(&"separation", UiStyle.UNIT / 2)
+	box.add_theme_constant_override(&"separation", floori(UiStyle.UNIT / 2.0))
 	panel.add_child(box)
 	_heading = Label.new()
 	_heading.add_theme_color_override(&"font_color", UiStyle.ACCENT)
@@ -88,7 +88,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if options.visible or _resuming or not MenuInput.fresh(event):
 		return
 	# During the game's own transition, even the pause key waits.
-	if blocked.is_valid() and bool(blocked.call()):
+	var waiting: bool = blocked.is_valid() and blocked.call()
+	if waiting:
 		return
 	if event.is_action_pressed(&"pause"):
 		_set_paused(not get_tree().paused)
@@ -142,9 +143,12 @@ func _click(_direction: int, i: int) -> void:
 
 
 func _choose() -> void:
-	var id := StringName(str((entries[_index] as Array)[0]))
+	var picked: Array = entries[_index]
+	var id := StringName(str(picked[0]))
 	match id:
 		&"resume":
+			# Not awaited: _resuming keeps further input out until it ends.
+			@warning_ignore("missing_await")
 			_resume()
 		&"options":
 			options.open()
@@ -163,7 +167,8 @@ func _refresh() -> void:
 	var strong := UiStyle.body(UiStyle.STRONG)
 	var wide := float(Prefs.px(WIDTH))
 	for i in _rows.size():
-		var label := Loc.t(str((entries[i] as Array)[1]))
+		var entry: Array = entries[i]
+		var label := Loc.t(str(entry[1]))
 		_rows[i].show_row(label, i == _index)
 		var needed := strong.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x
 		wide = maxf(wide, needed + UiStyle.UNIT * 6.0)

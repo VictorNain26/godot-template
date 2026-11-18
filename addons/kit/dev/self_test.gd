@@ -33,7 +33,8 @@ func _ready() -> void:
 	if config != null and config.has_method(&"self_test"):
 		var more: Variant = await config.call(&"self_test")
 		if more is Array:
-			for failure: Variant in more as Array:
+			var reported: Array = more
+			for failure: Variant in reported:
 				failures.append(str(failure))
 	if failures.is_empty():
 		print("SELFTEST OK")
@@ -62,9 +63,9 @@ static func fonts() -> Array[String]:
 static func scenes() -> Array[String]:
 	var found := {}
 	for file in DirAccess.get_files_at(SCENES):
-		var name := file.trim_suffix(".remap")
-		if name.get_extension() in ["tscn", "scn"]:
-			found[SCENES.path_join(name)] = true
+		var listed := file.trim_suffix(".remap")
+		if listed.get_extension() in ["tscn", "scn"]:
+			found[SCENES.path_join(listed)] = true
 	var out: Array[String] = []
 	for scene: String in found:
 		out.append(scene)

@@ -42,7 +42,7 @@ static func text(
 ## The largest size up to `size` at which `string` is no wider than `width`.
 static func fit(font: Font, string: String, size: int, width: float) -> int:
 	var wide := font.get_string_size(string, LEFT, -1, size).x
-	return size if wide <= width else maxi(int(floor(size * width / wide)), 1)
+	return size if wide <= width else maxi(floori(size * width / wide), 1)
 
 
 ## Baseline that centres one line of `font` at `size` in `rect`.
@@ -103,7 +103,8 @@ static func keycap(
 	var cap := Rect2(at.x, roundf(middle - tall * 0.5), wide, tall)
 	canvas.draw_style_box(UiStyle.keycap(), cap)
 	if ARROWS.has(label):
-		chevron(canvas, cap.get_center() - Vector2(0, 1), size * 0.3, ARROWS[label], colour)
+		var pointing: Vector2 = ARROWS[label]
+		chevron(canvas, cap.get_center() - Vector2(0, 1), size * 0.3, pointing, colour)
 	else:
 		text(canvas, font, Vector2(cap.get_center().x, at.y - 1.0), label, size, colour, CENTER)
 	return wide
@@ -114,7 +115,8 @@ static func legend_size(entries: Array, size: int, limit: float) -> Vector2:
 	var lines := _legend_lines(entries, size, limit)
 	var wide := 0.0
 	for line: Array in lines:
-		wide = maxf(wide, line[0])
+		var line_width: float = line[0]
+		wide = maxf(wide, line_width)
 	return Vector2(wide, lines.size() * roundf(size * 2.0) - roundf(size * 0.5))
 
 
@@ -154,7 +156,7 @@ static func legend(
 			for key: String in entry[1]:
 				x += keycap(canvas, Vector2(x, y), key, size, UiStyle.TEXT) + 4.0
 			x += roundf(size * 0.3)
-			x += text(canvas, font, Vector2(x, y), entry[0], size, UiStyle.TEXT)
+			x += text(canvas, font, Vector2(x, y), str(entry[0]), size, UiStyle.TEXT)
 			x += roundf(size * 1.4)
 		y += roundf(size * 2.0)
 	return block
@@ -199,7 +201,7 @@ static func menu(
 	canvas.draw_style_box(UiStyle.panel(), panel)
 	for i in labels.size():
 		var at := panel.position + Vector2(pad, pad + i * pitch)
-		row(canvas, Rect2(at, Vector2(wide, tall)), labels[i], i == index, size)
+		row(canvas, Rect2(at, Vector2(wide, tall)), str(labels[i]), i == index, size)
 	return panel
 
 
@@ -253,7 +255,8 @@ static func stats(
 		canvas.draw_rect(rule, Color(UiStyle.EDGE, UiStyle.BORDER_ALPHA))
 		top += gap
 	for note: Array in notes:
-		top += paragraph(canvas, Vector2(x, top), str(note[0]), size, wide, note[1])
+		var tint: Color = note[1]
+		top += paragraph(canvas, Vector2(x, top), str(note[0]), size, wide, tint)
 	return panel
 
 

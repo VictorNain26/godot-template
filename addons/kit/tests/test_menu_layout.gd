@@ -83,15 +83,15 @@ func test_selecting_a_row_moves_nothing() -> void:
 	var menu := _menu()
 	await _settle()
 	var panel: PanelContainer = menu.find_children("*", "PanelContainer", true, false)[0]
-	var before: Array[Rect2] = [panel.get_global_rect()]
+	var start: Array[Rect2] = [panel.get_global_rect()]
 	for row in _rows(menu):
-		before.append(row.get_global_rect())
+		start.append(row.get_global_rect())
 	menu.move(1)
 	await _settle()
-	var after: Array[Rect2] = [panel.get_global_rect()]
+	var moved: Array[Rect2] = [panel.get_global_rect()]
 	for row in _rows(menu):
-		after.append(row.get_global_rect())
-	assert_array(after).is_equal(before)
+		moved.append(row.get_global_rect())
+	assert_array(moved).is_equal(start)
 	var rows := _rows(menu)
 	assert_bool(rows[1].focused).is_true()
 	assert_bool(rows[0].focused).is_false()
@@ -143,10 +143,11 @@ func test_the_legend_names_the_players_own_keys() -> void:
 	var help := Prefs.help()
 	assert_int(help.size()).is_equal(Prefs.help_entries.size())
 	for i in help.size():
-		assert_str(str(help[i][0])).is_equal(Loc.t(Prefs.help_entries[i][0]))
+		assert_str(str(help[i][0])).is_equal(Loc.t(str(Prefs.help_entries[i][0])))
 		var actions: Array = Prefs.help_entries[i][1]
 		for k in actions.size():
-			assert_str(str(help[i][1][k])).is_equal(Prefs.key_label(actions[k]))
+			var action: StringName = actions[k]
+			assert_str(str(help[i][1][k])).is_equal(Prefs.key_label(action))
 	var bar: LegendBar = auto_free(LegendBar.new())
 	add_child(bar)
 	bar.show_entries(help)
@@ -172,8 +173,10 @@ func test_a_panel_of_figures_keeps_its_place_while_they_count() -> void:
 	var size := UiStyle.BODY
 	var panels: Array[Rect2] = []
 	for time: String in ["0:00.00", "0:32.45", "1:11.11"]:
-		var rows := [["Temps", time], ["Pièces", "44 / 75"]]
-		await _paint(func(c: Control) -> void: panels.append(UiDraw.stats(c, corner, rows, size)))
+		var figures := [["Temps", time], ["Pièces", "44 / 75"]]
+		await _paint(
+			func(c: Control) -> void: panels.append(UiDraw.stats(c, corner, figures, size))
+		)
 	assert_int(panels.size()).is_greater_equal(3)
 	for panel in panels:
 		assert_that(panel).is_equal(panels[0])
@@ -193,15 +196,18 @@ func test_a_panel_of_figures_keeps_its_place_while_they_count() -> void:
 func test_a_headline_too_long_for_the_screen_is_made_to_fit() -> void:
 	var room := 1280.0 - UiStyle.MARGIN * 2.0
 	for scale: float in Settings.TEXT_SCALES:
-		var asked := int(round(UiStyle.TITLE * scale))
+		var asked := roundi(UiStyle.TITLE * scale)
 		var font := UiStyle.display(asked)
 		var size := UiDraw.fit(font, "LA NUIT RECULE DE NOUVEAU", asked, room)
 		var wide := (
-			UiStyle.display(size).get_string_size("LA NUIT RECULE DE NOUVEAU", 0, -1, size).x
+			UiStyle
+			. display(size)
+			. get_string_size("LA NUIT RECULE DE NOUVEAU", UiDraw.LEFT, -1, size)
+			. x
 		)
 		assert_float(wide).is_less_equal(room + 8.0)
 		# Made smaller, it is still larger than what is read under it.
-		assert_int(size).is_greater(int(round(UiStyle.BODY * scale)))
+		assert_int(size).is_greater(roundi(UiStyle.BODY * scale))
 		assert_int(UiDraw.fit(font, "FIN", asked, room)).is_equal(asked)
 
 
