@@ -3,8 +3,8 @@ extends GdUnitTestSuite
 ## The kit works without its menus: a game may delete addons/kit_ui and write
 ## its own. No script of the kit names a class or a file of the menus; what
 ## they add (skin, export checks, clicks) reaches the kit through the game's
-## kit config. tools/kit_core_check.sh proves it on a project that has no
-## menus at all. Part of the kit (addons/kit).
+## kit config, so a game that deletes addons/kit_ui keeps a working kit.
+## Part of the kit (addons/kit).
 
 const CORE := "res://addons/kit"
 const MENUS := "res://addons/kit_ui"

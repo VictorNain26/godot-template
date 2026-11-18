@@ -6,8 +6,6 @@ disable-model-invocation: true
 
 # Nouveau jeu
 
-Le jeu vient de `copier copy --vcs-ref main gh:VictorNain26/godot-template <dossier>` (README du template) : `.copier-answers.yml` lui permet ensuite `mise run template-update`.
-
 1. Changer `config/name` (et `config/description`) dans `project.godot`, et remettre `config/version` à `0.1.0`.
 2. Lancer `mise install` et `git lfs install`.
 3. Choisir le rendu : Forward+ (par défaut, pour la 3D et l’éclairage avancé) ou Compatibility (`rendering/renderer/rendering_method="gl_compatibility"`, pour un jeu 2D ou web d’abord, plus léger). Garder la démo `*_2d` ou `*_3d` (scène, script, test) et supprimer l'autre ; `START_SCENE` de `scenes/title.gd` pointe vers celle qu'on garde.

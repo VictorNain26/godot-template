@@ -46,8 +46,7 @@ func _files(dir_path: String) -> Array[String]:
 	if dir_path.get_extension() in EXTENSIONS:
 		return [dir_path]
 	var dir := DirAccess.open(dir_path)
-	# A folder with a .gdignore is not part of the project (Godot skips it):
-	# tools/kit_core_fixture is a separate game, checked by kit_core_check.sh.
+	# A folder with a .gdignore is not part of the project (Godot skips it).
 	if dir == null or dir.file_exists(".gdignore"):
 		return out
 	for sub in dir.get_directories():
