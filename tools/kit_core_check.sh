@@ -23,6 +23,7 @@ s = re.sub(r'(?m)^_mcp_game_helper=.*\n', '', s)
 s = re.sub(r'(?m)^enabled=PackedStringArray\(.*\)\n', 'enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")\n', s)
 s = re.sub(r'(?m)^theme/custom_font=.*\n', '', s)
 s = re.sub(r'(?m)^locale/translations=.*\n', 'locale/translations=PackedStringArray("res://locale/en.po")\n', s)
+s = s.replace('"res://addons/kit": 1,\n"res://addons/kit_ui": 1\n}', '"res://addons/kit": 1\n}')
 for needed in ('kit_ui', 'godot_ai', 'title.tscn'):
     if needed in s:
         sys.exit("project.godot still names " + needed)
