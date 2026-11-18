@@ -24,7 +24,8 @@ Prefs="*res://addons/kit/prefs/prefs.gd"
 
 gdscript/warnings/directory_rules={
 "res://addons": 0,
-"res://addons/kit": 1
+"res://addons/kit": 1,
+"res://addons/kit_ui": 1
 }
 gdscript/warnings/unassigned_variable=2
 gdscript/warnings/unassigned_variable_op_assign=2

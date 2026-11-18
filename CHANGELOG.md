@@ -21,6 +21,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Numéros de v
 
 ### Corrigé
 
+- `addons/kit_ui` échappait aux avertissements en erreurs depuis qu'il est sorti de `addons/kit` (`directory_rules` ne remettait que `addons/kit`). Il y est remis, et `test_core_alone.gd` échoue si un dossier `kit*` n'y est pas.
 - Depuis la séparation des menus, l'export excluait `mouse_check.gd` et `KitSim`, que la config du kit nomme : dans l'exécutable, `kit_config.gd` ne compilait plus (pas d'actions, pas de skin) et l'auto-test affichait pourtant `SELFTEST OK`. Les scripts restent dans l'export ; seule la scène `mouse_check.tscn` en sort.
 
 - Le kit échappait aux avertissements de typage (tout `res://addons` était exclu) : une soixantaine de transtypages et d'arguments `Variant` non vérifiés, de variables qui en masquaient d'autres et de divisions entières, maintenant typés et nommés.

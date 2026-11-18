@@ -63,3 +63,21 @@ func test_no_script_of_the_kit_names_the_menus() -> void:
 			if RegEx.create_from_string("\\b%s\\b" % menu_class).search(code) != null:
 				named.append("%s: %s" % [file, menu_class])
 	assert_array(named).override_failure_message("the kit names its menus: %s" % [named]).is_empty()
+
+
+func test_the_kit_and_every_kit_addon_get_the_warnings() -> void:
+	# res://addons is left out of the warnings by default (third-party code):
+	# each kit folder must be put back in, or its errors go unseen.
+	var rules: Dictionary = ProjectSettings.get_setting(
+		"debug/gdscript/warnings/directory_rules", {}
+	)
+	var dirs: Array[String] = [CORE]
+	for sub in DirAccess.get_directories_at("res://addons"):
+		if sub.begins_with("kit_"):
+			dirs.append("res://addons".path_join(sub))
+	for dir in dirs:
+		var level: int = rules.get(dir, 0)
+		var told := (
+			"%s is not in debug/gdscript/warnings/directory_rules: its warnings go unseen" % dir
+		)
+		assert_int(level).override_failure_message(told).is_equal(1)
